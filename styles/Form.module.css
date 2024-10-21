@@ -1,0 +1,127 @@
+/*
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.container h2 {
+  margin-bottom: 20px;
+}
+
+.container form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.container input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+}
+
+.container button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.container button:hover {
+  background-color: #45a049;
+}
+
+.container input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+
+*/
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.container h2 {
+  margin-bottom: 20px;
+}
+
+.container form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.container input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+}
+
+.container button {
+  padding: 10px;
+  background-color: #4CAF50; /* Green */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.container button:hover {
+  background-color: #45a049; /* Darker green */
+}
+
+.container input:focus {
+  outline: none;
+  border-color: #4CAF50; /* Green */
+}
+
+/* Style for the button with the text "Register" */
+.container .register-button {
+  background-color: #008CBA; /* Blue */
+}
+
+.container .register-button:hover {
+  background-color: #0069D9; /* Darker blue */
+}
+
+/* Style for the button with the text "Login" */
+.container .login-button {
+  background-color: #f44336; /* Red */
+}
+
+.container .login-button:hover {
+  background-color: #d93025; /* Darker red */
+}
+
+/* Style for the button with the text "Create Todo" */
+.container .create-todo-button {
+  background-color: #FFC107; /* Yellow */
+}
+
+.container .create-todo-button:hover {
+  background-color: #FFA500; /* Darker yellow */
+}
+
+/* Style for the button with the text "List Todos" */
+.container .list-todos-button {
+  background-color: #2196F3; /* Blue */
+}
+
+.container .list-todos-button:hover {
+  background-color: #1A73E8; /* Darker blue */
+}
