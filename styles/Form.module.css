@@ -1,50 +1,5 @@
-/*
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100vw;
-}
-
-.container h2 {
-  margin-bottom: 20px;
-}
-
-.container form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.container input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 300px;
-}
-
-.container button {
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.container button:hover {
-  background-color: #45a049;
-}
-
-.container input:focus {
-  outline: none;
-  border-color: #4CAF50;
-}
 
 
-*/
 
 .container {
   display: flex;
@@ -53,23 +8,29 @@
   justify-content: center;
   height: 100vh;
   width: 100vw;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .container h2 {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .container form {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .container input {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 300px;
+  width: 100%; /* Full width for responsiveness */
+  box-sizing: border-box;
 }
 
 .container button {
@@ -79,6 +40,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 100%; /* Full width for responsiveness */
 }
 
 .container button:hover {
@@ -90,7 +52,7 @@
   border-color: #4CAF50; /* Green */
 }
 
-/* Style for the button with the text "Register" */
+/* Specific Button Styles */
 .container .register-button {
   background-color: #008CBA; /* Blue */
 }
@@ -99,7 +61,6 @@
   background-color: #0069D9; /* Darker blue */
 }
 
-/* Style for the button with the text "Login" */
 .container .login-button {
   background-color: #f44336; /* Red */
 }
@@ -108,7 +69,6 @@
   background-color: #d93025; /* Darker red */
 }
 
-/* Style for the button with the text "Create Todo" */
 .container .create-todo-button {
   background-color: #FFC107; /* Yellow */
 }
@@ -117,11 +77,59 @@
   background-color: #FFA500; /* Darker yellow */
 }
 
-/* Style for the button with the text "List Todos" */
 .container .list-todos-button {
   background-color: #2196F3; /* Blue */
 }
 
 .container .list-todos-button:hover {
   background-color: #1A73E8; /* Darker blue */
+}
+
+/* Media Queries for Responsiveness */
+
+/* For screens smaller than 600px */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .container h2 {
+    font-size: 1.5rem;
+  }
+
+  .container input {
+    padding: 8px;
+  }
+
+  .container button {
+    padding: 8px;
+    font-size: 1rem;
+  }
+}
+
+/* For screens between 600px and 900px */
+@media (min-width: 600px) and (max-width: 900px) {
+  .container {
+    padding: 15px;
+  }
+
+  .container form {
+    max-width: 350px;
+  }
+
+  .container input {
+    padding: 9px;
+  }
+}
+
+/* For large screens (above 1200px) */
+@media (min-width: 1200px) {
+  .container {
+    height: 80vh;
+    width: 80vw;
+  }
+
+  .container form {
+    max-width: 450px;
+  }
 }

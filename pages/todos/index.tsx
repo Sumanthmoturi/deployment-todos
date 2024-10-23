@@ -1,4 +1,4 @@
-import { GetServerSidePropsContext } from 'next'; // Import the type for context
+import { GetServerSidePropsContext } from 'next'; 
 import axios from '../../utils/axios';
 import Link from 'next/link';
 import styles from '../../styles/Todos.module.css';
