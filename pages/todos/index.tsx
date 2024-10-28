@@ -53,7 +53,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
   return (
     <div className={styles.container}>
-      <h2>Todos</h2>
+      <h2 className={styles.heading2}>Todos</h2>
 
       <select
         className={styles.select}
@@ -68,15 +68,15 @@ export default function Todos({ initialTodos }: TodosPageProps) {
         <ul>
           {todos.map((todo) => (
             <li key={todo.id} className={styles.todoItem}>
-              <h3>{todo.name}</h3>
-              <p>{todo.description}</p>
-              <p>Status: {todo.status}</p>
+              <h3 className={styles.heading3}>Name: {todo.name}</h3>
+              <p className={styles.paragraph}>Description: {todo.description}</p>
+              <p className={styles.paragraph}>Status: {todo.status}</p>
 
               <Link href={`/todos/${todo.id}`}>
-                <button>Edit</button>
+                <button className={styles.button1}>Edit</button>
               </Link>
 
-              <button onClick={() => toggleTodoStatus(todo)}>
+              <button onClick={() => toggleTodoStatus(todo)} className={styles.button1}>
                 Mark as {todo.status === 'completed' ? 'In Progress' : 'Completed'}
               </button>
             </li>

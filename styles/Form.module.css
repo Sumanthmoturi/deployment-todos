@@ -1,135 +1,136 @@
-
-
-
+/* Main Container */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   padding: 20px;
   box-sizing: border-box;
+
+  background-image: url('https://plus.unsplash.com/premium_photo-1683417272601-dbbfed0ed718?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8dG9kb3xlbnwwfDB8MHx8fDA%3D');
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-attachment: fixed;
 }
 
+/* Heading Styles */
+.container h1,
 .container h2 {
   margin-bottom: 20px;
   text-align: center;
+  font-size: 3rem;
+  color: #1a1918;
+  font-style: oblique;
+  background-color: chocolate;
 }
 
+/* Responsive Heading Styles */
+@media (max-width: 600px) {
+  .container h1,
+  .container h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Form Container */
 .container form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.container input {
-  padding: 10px;
+/* Inputs and Selects */
+.container input,
+.container select {
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 100%; /* Full width for responsiveness */
+  width: 100%;
   box-sizing: border-box;
+  font-size: 1rem;
+  background-color: #fff;
+  transition: border-color 0.3s ease-in-out;
 }
 
+.container input:focus,
+.container select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Submit Button */
 .container button {
-  padding: 10px;
-  background-color: #4CAF50; /* Green */
+  padding: 12px;
+  background-color: #13cc13;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  width: 100%; /* Full width for responsiveness */
+  width: 100%;
+  font-size: 1rem;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .container button:hover {
-  background-color: #45a049; /* Darker green */
+  background-color: #45a049;
 }
 
-.container input:focus {
-  outline: none;
-  border-color: #4CAF50; /* Green */
+/* Error Message */
+.container .error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  font-weight: bold;
 }
 
-/* Specific Button Styles */
-.container .register-button {
-  background-color: #008CBA; /* Blue */
-}
-
-.container .register-button:hover {
-  background-color: #0069D9; /* Darker blue */
-}
-
-.container .login-button {
-  background-color: #f44336; /* Red */
-}
-
-.container .login-button:hover {
-  background-color: #d93025; /* Darker red */
-}
-
-.container .create-todo-button {
-  background-color: #FFC107; /* Yellow */
-}
-
-.container .create-todo-button:hover {
-  background-color: #FFA500; /* Darker yellow */
-}
-
-.container .list-todos-button {
-  background-color: #2196F3; /* Blue */
-}
-
-.container .list-todos-button:hover {
-  background-color: #1A73E8; /* Darker blue */
-}
-
-/* Media Queries for Responsiveness */
-
-/* For screens smaller than 600px */
+/* Media Queries */
 @media (max-width: 600px) {
   .container {
     padding: 10px;
   }
 
-  .container h2 {
-    font-size: 1.5rem;
+  .container form {
+    max-width: 100%;
   }
 
-  .container input {
-    padding: 8px;
-  }
-
+  .container input,
+  .container select,
   .container button {
-    padding: 8px;
-    font-size: 1rem;
+    padding: 10px;
+    font-size: 0.9rem;
   }
 }
 
-/* For screens between 600px and 900px */
 @media (min-width: 600px) and (max-width: 900px) {
-  .container {
-    padding: 15px;
-  }
-
   .container form {
-    max-width: 350px;
+    max-width: 500px;
   }
 
-  .container input {
-    padding: 9px;
+  .container input,
+  .container select {
+    padding: 12px;
   }
 }
 
-/* For large screens (above 1200px) */
-@media (min-width: 1200px) {
-  .container {
-    height: 80vh;
-    width: 80vw;
+@media (min-width: 900px) {
+  .container form {
+    max-width: 700px;
   }
 
-  .container form {
-    max-width: 450px;
+  .container input,
+  .container select {
+    padding: 15px;
+    font-size: 1.1rem;
   }
 }

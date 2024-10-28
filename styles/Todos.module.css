@@ -1,13 +1,58 @@
-/* Todos.module.css */
 .container {
+  height: 100vh; /* Full height of the viewport */
+  width: 100vw; /* Full width of the viewport */
   padding: 20px;
+  box-sizing: border-box; /* Include padding in the element's total width and height */
+  overflow: auto; /* Enable scrolling if necessary */
 }
 
-.todoItem {
-  margin-bottom: 20px;
+.heading2 {
+  font-size: 3rem; /* Adjust size for better fit */
+  text-align: center; /* Center the title */
+  margin-bottom: 10px; /* Space below the title */
 }
 
 .select {
   width: 100%;
   padding: 10px;
+  font-size: 1em; /* Increase font size for better readability */
+  margin-bottom: 10px; /* Space below the select box */
+  border: 3px solid #141313; /* Add a border for better visibility */
+  border-radius: 25px; /* Round the corners */
+}
+
+
+
+.todoItem {
+  background-color: #edf0f3; /* Light background for todo items */
+  border: 1px solid #302c2c; /* Border for definition */
+  border-radius: 25px; /* Rounded corners */
+  padding: 15px; /* Padding inside todo items */
+  margin-bottom: 15px; /* Space below each todo item */
+  transition: box-shadow 0.2s; /* Smooth transition for hover effects */
+}
+
+.todoItem:hover {
+  box-shadow: 0 4px 8px rgba(165, 54, 54, 0.1); /* Add shadow on hover */
+}
+
+.button1 {
+  padding: 5px;
+  font-size: 15px;
+  margin: 5px;
+  border-radius: 5px;
+  background-color: darkseagreen;
+  color: white; 
+}
+
+.paragraph {
+  font-size: 20px;
+  margin: bottom 20px;
+
+}
+
+
+.heading3 {
+  font-size: 25px;
+  
 }
