@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
 import Select from 'react-select';
 
-// Predefined options
+
 const countries = [
   { value: 'India', label: 'India' },
   { value: 'Sri Lanka', label: 'Sri Lanka' },
@@ -39,7 +39,6 @@ export default function Register() {
 
   const onSubmit = async (data: any) => {
     try {
-      // Handle "Other" country/hobby input cases
       if (data.country.value === 'Other') data.country = data.otherCountry;
       if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
         data.hobbies = [
@@ -62,7 +61,7 @@ export default function Register() {
       router.push('/login');
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
-        alert(error.response.data.message); // Conflict alert
+        alert(error.response.data.message);
       } else {
         alert('Registration failed. Please try again.');
       }
@@ -85,29 +84,30 @@ export default function Register() {
       <h2>Register</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Name Field */}
         <input
           {...register('name', { required: 'Name is required' })}
           placeholder="Name"
         />
         <p className={styles.error}>{errors.name?.message?.toString()}</p>
 
-        {/* Mobile Field */}
         <input
           {...register('mobile', { required: 'Mobile is required' })}
           placeholder="Mobile"
         />
         <p className={styles.error}>{errors.mobile?.message?.toString()}</p>
 
-        {/* Gender Selection */}
-        <select {...register('gender', { required: 'Gender is required' })}>
-          <option value="">Select Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
+        <select
+  {...register('gender', { required: 'Gender is required' })}
+  defaultValue=""
+>
+  <option value="" disabled hidden>
+    Select Gender
+  </option>
+  <option value="male">Male</option>
+  <option value="female">Female</option>
+</select>
         <p className={styles.error}>{errors.gender?.message?.toString()}</p>
 
-        {/* Country Selection with react-select */}
         <Select
           options={countries}
           onChange={handleCountryChange}

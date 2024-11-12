@@ -6,7 +6,7 @@ type Todo = {
   id: number;
   name: string;
   description: string;
-  status: string; // "in progress" or "completed"
+  status: string;
 };
 
 export default function Todos() {
@@ -15,7 +15,7 @@ export default function Todos() {
 
   useEffect(() => {
     fetchTodos();
-  }, [statusFilter]); // Refetch todos when status filter changes
+  }, [statusFilter]); 
 
   const fetchTodos = async () => {
     try {
