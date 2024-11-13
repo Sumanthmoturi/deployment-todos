@@ -31,8 +31,11 @@ export default function Login() {
         setError('mobile', { message: 'Incorrect mobile number' });
       } else if (errorMessage === 'Incorrect password') {
         setError('password', { message: 'Incorrect password' });
+      } else if (errorMessage === 'Both mobile number and password are incorrect') {
+        setError('mobile', { message: 'Incorrect mobile number' });
+        setError('password', { message: 'Incorrect password' });
       } else {
-        alert('Mobile or Password Incorrect');
+        alert('Invalid Credentials');
       }
     }
   };

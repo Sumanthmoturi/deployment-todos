@@ -123,7 +123,6 @@ export default function Register() {
         )}
         <p className={styles.error}>{errors.otherCountry?.message?.toString()}</p>
 
-        {/* Hobby Multi-select with react-select */}
         <Select
           isMulti
           options={hobbiesOptions}
@@ -142,7 +141,6 @@ export default function Register() {
         )}
         <p className={styles.error}>{errors.otherHobby?.message?.toString()}</p>
 
-        {/* Email Field */}
         <input
           {...register('email', { required: 'Email is required' })}
           type="email"
@@ -150,7 +148,6 @@ export default function Register() {
         />
         <p className={styles.error}>{errors.email?.message?.toString()}</p>
 
-        {/* Password Field */}
         <input
           {...register('password', { required: 'Password is required' })}
           type="password"
@@ -158,7 +155,7 @@ export default function Register() {
         />
         <p className={styles.error}>{errors.password?.message?.toString()}</p>
 
-        {/* Submit Button */}
+    
         <button type="submit" className={styles.registerButton}>
           Register
         </button>

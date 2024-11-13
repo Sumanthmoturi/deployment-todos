@@ -38,7 +38,7 @@ export default function Todos() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Update the local state after successfully updating the status
+     
       setTodos(todos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t)));
     } catch (error) {
       console.error('Failed to update todo status:', error);
@@ -50,7 +50,7 @@ export default function Todos() {
     <div className={styles.container}>
       <h2>Todos</h2>
 
-      {/* Dropdown for selecting todo status */}
+     
       <select
         className={styles.select}
         onChange={(e) => setStatusFilter(e.target.value)}
@@ -60,14 +60,14 @@ export default function Todos() {
         <option value="completed">Completed</option>
       </select>
 
-      {/* Display list of todos */}
+     
       {todos.length > 0 ? (
         <ul>
           {todos.map((todo) => (
             <li key={todo.id} className={styles.todoItem}>
               <h3>{todo.name}</h3>
               <p>{todo.description}</p>
-              {/* Highlight status dynamically */}
+             
               <p>
                 Status:{' '}
                 <span
@@ -80,7 +80,7 @@ export default function Todos() {
                   {todo.status}
                 </span>
               </p>
-              {/* Button to toggle status */}
+             
               <button onClick={() => toggleTodoStatus(todo)}>
                 Mark as {todo.status === 'completed' ? 'In Progress' : 'Completed'}
               </button>
@@ -88,7 +88,7 @@ export default function Todos() {
           ))}
         </ul>
       ) : (
-        <p>No todos available.</p> // Show message if no todos are found
+        <p>No todos available.</p> 
       )}
     </div>
   );

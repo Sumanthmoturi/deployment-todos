@@ -8,7 +8,7 @@ type Todo = {
   id: number;
   name: string;
   description: string;
-  status: string; // "in progress" or "completed"
+  status: string;
 };
 
 interface TodosPageProps {

@@ -4,33 +4,50 @@
   padding: 20px;
   box-sizing: border-box; /* Include padding in the element's total width and height */
   overflow: auto; /* Enable scrolling if necessary */
+  background-image: url('https://plus.unsplash.com/premium_photo-1683417272601-dbbfed0ed718?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8dG9kb3xlbnwwfDB8MHx8fDA%3D');
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-attachment: fixed;
 }
 
 .heading2 {
   font-size: 3rem; /* Adjust size for better fit */
   text-align: center; /* Center the title */
   margin-bottom: 10px; /* Space below the title */
+  font-style: italic;
+  background-color:chocolate;
 }
 
 .select {
   width: 100%;
   padding: 10px;
-  font-size: 1em; /* Increase font size for better readability */
+  font-size: 1.2rem; /* Increase font size for better readability */
   margin-bottom: 10px; /* Space below the select box */
   border: 3px solid #141313; /* Add a border for better visibility */
   border-radius: 25px; /* Round the corners */
 }
 
 
-
 .todoItem {
-  background-color: #edf0f3; /* Light background for todo items */
-  border: 1px solid #302c2c; /* Border for definition */
-  border-radius: 25px; /* Rounded corners */
-  padding: 15px; /* Padding inside todo items */
-  margin-bottom: 15px; /* Space below each todo item */
-  transition: box-shadow 0.2s; /* Smooth transition for hover effects */
+  background-color: #edf0f3;
+  border: 1px solid #302c2c;
+  border-radius: 25px;
+  padding: 20px;
+  margin-bottom: 15px;
+  transition: box-shadow 0.2s;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 30px;
+  line-height: 1.5;
+  color: #333;
 }
+
+.todoItem span {
+  display: inline-block;
+  margin: 5px 0;
+}
+
 
 .todoItem:hover {
   box-shadow: 0 4px 8px rgba(165, 54, 54, 0.1); /* Add shadow on hover */
@@ -46,13 +63,13 @@
 }
 
 .paragraph {
-  font-size: 20px;
+  font-size: 25px;
   margin: bottom 20px;
 
 }
 
 
 .heading3 {
-  font-size: 25px;
+  font-size: 28px;
   
 }
