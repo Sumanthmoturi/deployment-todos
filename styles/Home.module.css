@@ -5,16 +5,17 @@
   height:100vh;;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items:center;
+  justify-content:center;
   background-image:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.2)),url('https://images.pexels.com/photos/2468773/pexels-photo-2468773.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
   background-size: cover; 
   background-position-x: center;
   background-position-y: center;
+  position: relative;
 }
 
 .heading {
-  font-size: 5rem;
+  font-size: 4rem;
   margin-bottom: 2rem;
   color: white;
   letter-spacing: 0.5px;
@@ -38,4 +39,15 @@
 
 .links a:hover {
   background-color: #45a049;
+}
+
+.sticker {
+  width: 250px;
+  height: 250px;
+  background-image: url('https://cdn-icons-png.flaticon.com/256/9394/9394754.png');
+  background-size:cover;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 15%;
+
 }

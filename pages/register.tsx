@@ -81,6 +81,7 @@ export default function Register() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.sticker1}></div>
       <h2>Register</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
