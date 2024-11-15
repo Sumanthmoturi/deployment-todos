@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
 
@@ -13,11 +13,7 @@ export default function Todos() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>(''); // Filter status
 
-  useEffect(() => {
-    fetchTodos();
-  }, [statusFilter]); 
-
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/todo', {
@@ -28,7 +24,11 @@ export default function Todos() {
     } catch (error) {
       console.error('Failed to fetch todos:', error);
     }
-  };
+  }, [statusFilter]); 
+
+  useEffect(() => {
+    fetchTodos();
+  }, [fetchTodos]); 
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
@@ -39,7 +39,7 @@ export default function Todos() {
       });
 
      
-      setTodos(todos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t)));
+      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: newStatus } : t)));
     } catch (error) {
       console.error('Failed to update todo status:', error);
       alert('Error updating the todo status');
@@ -60,14 +60,15 @@ export default function Todos() {
         <option value="completed">Completed</option>
       </select>
 
-     
+      {/* Todo List */}
       {todos.length > 0 ? (
         <ul>
           {todos.map((todo) => (
             <li key={todo.id} className={styles.todoItem}>
               <h3>{todo.name}</h3>
               <p>{todo.description}</p>
-             
+
+              {/* Status Display */}
               <p>
                 Status:{' '}
                 <span
@@ -80,7 +81,8 @@ export default function Todos() {
                   {todo.status}
                 </span>
               </p>
-             
+
+              
               <button onClick={() => toggleTodoStatus(todo)}>
                 Mark as {todo.status === 'completed' ? 'In Progress' : 'Completed'}
               </button>

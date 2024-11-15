@@ -3,11 +3,18 @@ import axios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
 
+
+interface TodoFormData {
+  name: string;
+  description: string;
+  time: number;
+}
+
 export default function TodoForm() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<TodoFormData>(); // Specify the form data type here
   const router = useRouter();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: TodoFormData) => { // Use the TodoFormData type
     try {
       const token = localStorage.getItem('token');
       await axios.post('/todo', data, {

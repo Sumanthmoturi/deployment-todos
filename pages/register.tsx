@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form'; // Use SubmitHandler for better type handling
 import axios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
-import Select from 'react-select';
+import Select, { SingleValue, MultiValue } from 'react-select';
+import { AxiosError } from 'axios';
 
+type Option = { value: string; label: string };
 
-const countries = [
+const countries: Option[] = [
   { value: 'India', label: 'India' },
   { value: 'Sri Lanka', label: 'Sri Lanka' },
   { value: 'Japan', label: 'Japan' },
@@ -15,7 +17,7 @@ const countries = [
   { value: 'Other', label: 'Other' },
 ];
 
-const hobbiesOptions = [
+const hobbiesOptions: Option[] = [
   { value: 'Music', label: 'Music' },
   { value: 'Sports', label: 'Sports' },
   { value: 'Painting', label: 'Painting' },
@@ -24,97 +26,104 @@ const hobbiesOptions = [
   { value: 'Other', label: 'Other' },
 ];
 
+type FormData = {
+  name: string;
+  mobile: string;
+  gender: string;
+  country: Option | string;
+  otherCountry?: string;
+  hobbies: string[];
+  otherHobby?: string;
+  email: string;
+  password: string;
+};
+
 export default function Register() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>();
   const router = useRouter();
 
   const [showOtherCountry, setShowOtherCountry] = useState(false);
   const [showOtherHobby, setShowOtherHobby] = useState(false);
-  const [selectedHobbies, setSelectedHobbies] = useState<any[]>([]);
+  const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     try {
-      if (data.country.value === 'Other') data.country = data.otherCountry;
+      if ((data.country as Option).value === 'Other') {
+        data.country = data.otherCountry || '';
+      }
       if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
         data.hobbies = [
           ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
-          data.otherHobby,
+          data.otherHobby || '',
         ];
       } else {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
-      // Check for required fields
       if (!data.name || !data.email || !data.mobile || !data.password) {
         alert('All fields are required');
         return;
       }
 
-      // Make API call to register
       await axios.post('/auth/register', data);
       alert('User registered successfully!');
       router.push('/login');
-    } catch (error: any) {
-      if (error.response && error.response.status === 409) {
-        alert(error.response.data.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 409) {
+          alert(error.response.data.message);
+        } else {
+          alert('Registration failed. Please try again.');
+        }
       } else {
-        alert('Registration failed. Please try again.');
+        alert('An unknown error occurred.');
       }
     }
   };
 
-  const handleCountryChange = (selectedOption: any) => {
-    setValue('country', selectedOption);
-    setShowOtherCountry(selectedOption.value === 'Other');
-    if (selectedOption.value !== 'Other') setValue('otherCountry', '');
+  const handleCountryChange = (selectedOption: SingleValue<Option>) => {
+    setValue('country', selectedOption || '');
+    setShowOtherCountry(selectedOption?.value === 'Other');
+    if (selectedOption?.value !== 'Other') {
+      setValue('otherCountry', '');
+    }
   };
 
-  const handleHobbyChange = (selectedOptions: any) => {
+  const handleHobbyChange = (selectedOptions: MultiValue<Option>) => {
     setSelectedHobbies(selectedOptions);
-    setShowOtherHobby(selectedOptions.some((option: any) => option.value === 'Other'));
+    setShowOtherHobby(selectedOptions.some((option) => option.value === 'Other'));
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.sticker1}></div>
       <h2>Register</h2>
-
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
           {...register('name', { required: 'Name is required' })}
           placeholder="Name"
         />
-        <p className={styles.error}>{errors.name?.message?.toString()}</p>
+        <p className={styles.error}>{errors.name?.message}</p>
 
         <input
           {...register('mobile', { required: 'Mobile is required' })}
           placeholder="Mobile"
         />
-        <p className={styles.error}>{errors.mobile?.message?.toString()}</p>
+        <p className={styles.error}>{errors.mobile?.message}</p>
 
-        <select
-  {...register('gender', { required: 'Gender is required' })}
-  defaultValue=""
->
-  <option value="" disabled hidden>
-    Select Gender
-  </option>
-  <option value="male">Male</option>
-  <option value="female">Female</option>
-</select>
-        <p className={styles.error}>{errors.gender?.message?.toString()}</p>
+        <select {...register('gender', { required: 'Gender is required' })} defaultValue="">
+          <option value="" disabled hidden>Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <p className={styles.error}>{errors.gender?.message}</p>
 
         <Select
           options={countries}
           onChange={handleCountryChange}
           placeholder="Select Country"
         />
-        <p className={styles.error}>{errors.country?.message?.toString()}</p>
+        <p className={styles.error}>{errors.country?.message}</p>
 
         {showOtherCountry && (
           <input
@@ -122,7 +131,7 @@ export default function Register() {
             placeholder="Enter your country"
           />
         )}
-        <p className={styles.error}>{errors.otherCountry?.message?.toString()}</p>
+        <p className={styles.error}>{errors.otherCountry?.message}</p>
 
         <Select
           isMulti
@@ -132,7 +141,7 @@ export default function Register() {
           classNamePrefix="react-select"
           className={styles.multiSelect}
         />
-        <p className={styles.error}>{errors.hobbies?.message?.toString()}</p>
+        <p className={styles.error}>{errors.hobbies?.message}</p>
 
         {showOtherHobby && (
           <input
@@ -140,23 +149,22 @@ export default function Register() {
             placeholder="Enter your hobby"
           />
         )}
-        <p className={styles.error}>{errors.otherHobby?.message?.toString()}</p>
+        <p className={styles.error}>{errors.otherHobby?.message}</p>
 
         <input
           {...register('email', { required: 'Email is required' })}
           type="email"
           placeholder="Email"
         />
-        <p className={styles.error}>{errors.email?.message?.toString()}</p>
+        <p className={styles.error}>{errors.email?.message}</p>
 
         <input
           {...register('password', { required: 'Password is required' })}
           type="password"
           placeholder="Password"
         />
-        <p className={styles.error}>{errors.password?.message?.toString()}</p>
+        <p className={styles.error}>{errors.password?.message}</p>
 
-    
         <button type="submit" className={styles.registerButton}>
           Register
         </button>

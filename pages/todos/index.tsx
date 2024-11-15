@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from 'next';
 import axios from '../../utils/axios';
 import Link from 'next/link';
 import styles from '../../styles/Todos.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 type Todo = {
   id: number;
@@ -19,11 +19,8 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  useEffect(() => {
-    if (statusFilter) fetchFilteredTodos();
-  }, [statusFilter]);
-
-  const fetchFilteredTodos = async () => {
+  // Memoize the fetchFilteredTodos function to avoid unnecessary re-renders
+  const fetchFilteredTodos = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/todo', {
@@ -34,7 +31,11 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     } catch (error) {
       console.error('Failed to fetch filtered todos:', error);
     }
-  };
+  }, [statusFilter]); // Dependency on statusFilter
+
+  useEffect(() => {
+    if (statusFilter) fetchFilteredTodos();
+  }, [statusFilter, fetchFilteredTodos]); // Added fetchFilteredTodos to the dependency array
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
@@ -89,7 +90,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   );
 }
 
-// Server-side function with correct type
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const token = context.req.cookies['token'];
 

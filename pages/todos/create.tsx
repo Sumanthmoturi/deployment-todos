@@ -9,26 +9,31 @@ const statusOptions = [
   { value: 'completed', label: 'Completed' },
 ];
 
+type TodoFormInputs = {
+  name: string;
+  description: string;
+  time: number;
+  status: string;
+};
+
 export default function CreateTodo() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-  } = useForm();
+  } = useForm<TodoFormInputs>(); 
   const router = useRouter();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: TodoFormInputs) => {
     const token = localStorage.getItem('token');
 
-    // Make sure status is stored as a string (either "in progress" or "completed")
+
     const status = statusOptions.find(option => option.label === data.status)?.value || '';
 
-    // Add status as a string to the data before sending to the API
     const payload = { ...data, status };
 
     try {
-      const response = await axios.post('/todo', payload, {
+      await axios.post('/todo', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Todo created successfully');
