@@ -1,6 +1,5 @@
 import { GetServerSidePropsContext } from 'next'; 
 import axios from '../../utils/axios';
-import Link from 'next/link';
 import styles from '../../styles/Todos.module.css';
 import { useEffect, useState, useCallback } from 'react';
 
@@ -19,7 +18,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  // Memoize the fetchFilteredTodos function to avoid unnecessary re-renders
+  
   const fetchFilteredTodos = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
@@ -64,7 +63,8 @@ export default function Todos({ initialTodos }: TodosPageProps) {
         <option value="in progress">In Progress</option>
         <option value="completed">Completed</option>
       </select>
-
+       
+     <div className={styles.todoList}>
       {todos.length > 0 ? (
         <ul>
           {todos.map((todo) => (
@@ -73,9 +73,6 @@ export default function Todos({ initialTodos }: TodosPageProps) {
               <p className={styles.paragraph}>Description: {todo.description}</p>
               <p className={styles.paragraph}>Status: {todo.status}</p>
 
-              <Link href={`/todos/${todo.id}`}>
-                <button className={styles.button1}>Edit</button>
-              </Link>
 
               <button onClick={() => toggleTodoStatus(todo)} className={styles.button1}>
                 Mark as {todo.status === 'completed' ? 'In Progress' : 'Completed'}
@@ -86,6 +83,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
       ) : (
         <p>No todos available.</p>
       )}
+    </div>
     </div>
   );
 }

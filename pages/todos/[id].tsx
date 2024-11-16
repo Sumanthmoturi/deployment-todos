@@ -60,7 +60,7 @@ export default function Todos() {
         <option value="completed">Completed</option>
       </select>
 
-      {/* Todo List */}
+      <div className={styles.todoList}>
       {todos.length > 0 ? (
         <ul>
           {todos.map((todo) => (
@@ -93,5 +93,6 @@ export default function Todos() {
         <p>No todos available.</p> 
       )}
     </div>
+  </div>
   );
 }

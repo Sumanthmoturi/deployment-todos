@@ -15,7 +15,7 @@
 }
 
 .heading2 {
-  font-size: 3rem; 
+  font-size: 4rem; 
   text-align: center; 
   margin-bottom: 10px; 
   font-style: italic;
@@ -50,6 +50,8 @@
   font-size: 30px;
   line-height: 1.5;
   color: #333;
+  width: 1000px;
+
 
 
   box-sizing: border-box;
@@ -66,7 +68,7 @@
 }
 
 .button1 {
-  padding: 8px;
+  padding: 10px;
   font-size: 18px;
   margin: 8px;
   border-radius: 10px;
@@ -77,14 +79,15 @@
 }
 
 .paragraph {
-  font-size: 25px;
+  font-size: 35px;
   margin: 20px;
   color:black;
+  font-family: sans-serif;
 
 }
 
 
 .heading3 {
-  font-size: 28px;
-  
+  font-size: 38px;
 }
+
