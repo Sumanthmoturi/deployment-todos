@@ -65,7 +65,11 @@ export default function Register() {
         return;
       }
 
-      await axios.post('/auth/register', data);
+      await axios.post('/auth/register', data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
