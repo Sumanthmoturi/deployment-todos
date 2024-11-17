@@ -65,10 +65,13 @@ export default function Register() {
         return;
       }
 
-      await axios.post('/auth/register', data, {
+      const apiUrl = process.env.BACKEND_URL || 'https://deployment-todo-backend.onrender.com';
+      
+      await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
+        withCredentials: true, 
       });
       alert('User registered successfully!');
       router.push('/login');
