@@ -9,7 +9,7 @@
   background-size: cover;
   background-position-x: center;
   background-position-y: center;
-  position: relative;
+  position: relative; /* Ensures absolute positioning is relative to this container */
 }
 
 .heading {
@@ -41,23 +41,24 @@
   background-color: #45a049;
 }
 
+/* Sticker with absolute positioning */
 .sticker {
-  width: 250px;
-  height: 250px;
   background-image: url('https://cdn-icons-png.flaticon.com/256/9394/9394754.png');
   background-size: cover;
   background-repeat: no-repeat;
   position: absolute;
-  top: 15%;
-  left: 50%;
+  top: 15%; /* Position from top */
+  left: 50%; /* Horizontally center the sticker */
   transform: translateX(-50%); /* Center the sticker horizontally */
-  z-index: 10; /* Make sure it stays on top of other content */
+  z-index: 10;
+  width: 15vw;  /* Size based on viewport width */
+  height: 15vw; /* Size based on viewport width */
 }
 
 /* Media Queries for Responsiveness */
 @media (max-width: 900px) {
   .heading {
-    font-size: 3rem; /* Adjust heading size for smaller screens */
+    font-size: 3rem; /* Adjust heading size for medium screens */
   }
   .links {
     gap: 3rem;
@@ -66,15 +67,15 @@
     font-size: 20px;
   }
   .sticker {
-    width: 200px;  /* Reduce size for medium screens */
-    height: 200px;
-    top: 12%; /* Adjust the vertical position for medium screens */
+    width: 18vw; /* Adjust sticker size for tablets */
+    height: 18vw;
+    top: 10%; /* Adjust vertical position */
   }
 }
 
 @media (max-width: 600px) {
   .heading {
-    font-size: 2.5rem; /* Further reduce font size for mobile */
+    font-size: 2.5rem; /* Further reduce font size for mobile screens */
     margin-bottom: 1rem;
   }
   .links {
@@ -87,24 +88,24 @@
     font-size: 18px;
   }
   .sticker {
-    width: 150px; /* Further reduce size for mobile screens */
-    height: 150px;
-    top: 8%; /* Adjust the vertical position for mobile screens */
+    width: 22vw; /* Adjust sticker size for smaller screens */
+    height: 22vw;
+    top: 8%; /* Adjust vertical position */
   }
 }
 
-/* For extra small screens (e.g., very small mobile devices or portrait mode) */
+/* For extra small screens (very small mobile devices or portrait mode) */
 @media (max-width: 400px) {
   .heading {
-    font-size: 2rem; /* Reduce font size even more for extra small screens */
+    font-size: 2rem; /* Reduce font size for extra small screens */
   }
   .links a {
     font-size: 16px;
     padding: 8px 16px;
   }
   .sticker {
-    width: 120px; /* Reduce size for very small screens */
-    height: 120px;
-    top: 5%; /* Adjust the vertical position */
+    width: 25vw; /* Adjust sticker size for very small screens */
+    height: 25vw;
+    top: 5%; /* Adjust vertical position */
   }
 }
