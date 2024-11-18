@@ -1,4 +1,4 @@
-
+/* Main container styles */
 .container {
   display: flex;
   flex-direction: column;
@@ -8,12 +8,11 @@
   width: 100vw;
   padding: 20px;
   box-sizing: border-box;
-  background-image:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.2)),url('https://images.pexels.com/photos/2468773/pexels-photo-2468773.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-  background-size: cover; 
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2)), url('https://images.pexels.com/photos/2468773/pexels-photo-2468773.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+  background-size: cover;
   background-position-x: center;
   background-position-y: center;
 }
-
 
 .container h1,
 .container h2 {
@@ -22,18 +21,16 @@
   font-size: 4rem;
   color: white;
   font-family: sans-serif;
-  
 }
-
 
 @media (max-width: 600px) {
   .container h1,
   .container h2 {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* Adjust heading size for small screens */
   }
 }
 
-
+/* Form container styles */
 .container form {
   display: flex;
   flex-direction: column;
@@ -43,10 +40,9 @@
   padding: 20px;
   background-color: transparent;
   border-radius: 3px;
-  
 }
 
-
+/* Input and select box styles */
 .container input,
 .container select {
   padding: 12px;
@@ -66,24 +62,23 @@
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
-
+/* Button styles */
 .container button {
   padding: 10px 20px;
   background-color: #13cc13;
   color: white;
   border: none;
   border-radius: 8px;
-  margin:auto;
+  margin: auto;
   font-size: 1.2rem;
   font-family: sans-serif;
-  
 }
 
 .container button:hover {
   background-color: #911c1c;
 }
 
-
+/* Error message styles */
 .container .error {
   color: red;
   font-size: 0.9rem;
@@ -92,9 +87,10 @@
   font-weight: bold;
 }
 
+/* Mobile-first responsiveness */
 @media (max-width: 600px) {
   .container {
-    padding: 10px;
+    padding: 10px; /* Reduce padding for smaller screens */
   }
 
   .container form {
@@ -105,10 +101,11 @@
   .container select,
   .container button {
     padding: 10px;
-    font-size: 0.9rem;
+    font-size: 0.9rem; /* Slightly smaller font size for mobile */
   }
 }
 
+/* For tablets (600px to 900px) */
 @media (min-width: 600px) and (max-width: 900px) {
   .container form {
     max-width: 500px;
@@ -120,17 +117,15 @@
   }
 }
 
+/* For large screens (900px and above) */
 @media (min-width: 900px) {
   .container form {
-    max-width: 700px;
+    max-width: 700px; /* Slightly larger form for bigger screens */
   }
 
   .container input,
   .container select {
     padding: 15px;
-    font-size: 1.1rem;
+    font-size: 1.1rem; /* Slightly bigger font for readability */
   }
 }
-
-
-
