@@ -47,6 +47,8 @@ export default function Register() {
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
+    console.log(data); // Log form data for debugging
+
     try {
       if ((data.country as Option).value === 'Other') {
         data.country = data.otherCountry || '';
@@ -60,25 +62,34 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
+      // Check if required fields are filled
       if (!data.name || !data.email || !data.mobile || !data.password) {
         alert('All fields are required');
         return;
       }
 
+      // Ensure the country field is populated
+      if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
+        alert('Please select or enter a country');
+        return;
+      }
+
+      // Backend URL for registration (use environment variable if available)
       const apiUrl = process.env.BACKEND_URL || 'https://deployment-todo-backend.onrender.com';
       
-      await axios.post(`${apiUrl}/auth/register`, data, {
+      const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
         withCredentials: true, 
       });
+      console.log(response.data); // Log response data for debugging
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response) {
         if (error.response.status === 409) {
-          alert(error.response.data.message);
+          alert(error.response.data.message); // Handle duplicate registration error
         } else {
           alert('Registration failed. Please try again.');
         }
@@ -89,10 +100,10 @@ export default function Register() {
   };
 
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
-    setValue('country', selectedOption || '');
+    setValue('country', selectedOption?.value || '');
     setShowOtherCountry(selectedOption?.value === 'Other');
     if (selectedOption?.value !== 'Other') {
-      setValue('otherCountry', '');
+      setValue('otherCountry', ''); // Clear otherCountry if not selected
     }
   };
 
