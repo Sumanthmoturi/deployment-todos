@@ -46,9 +46,7 @@
   background-image: url('https://cdn-icons-png.flaticon.com/256/9394/9394754.png');
   background-size: cover;
   background-repeat: no-repeat;
-  top: 15%; /* Position from top */
-  left: 50%; /* Horizontally center the sticker */
-  transform: translateX(-50%); /* Center the sticker horizontally */
+ 
   z-index: 10;
   width: 15vw;  /* Size based on viewport width */
   height: 15vw; /* Size based on viewport width */
