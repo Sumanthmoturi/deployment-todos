@@ -47,7 +47,7 @@ export default function Register() {
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-    console.log(data); // Log form data for debugging
+    console.log(data);
 
     try {
       if ((data.country as Option).value === 'Other') {
@@ -62,7 +62,6 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
-      // Check if required fields are filled
       if (!data.name || !data.email || !data.mobile || !data.password) {
         alert('All fields are required');
         return;
@@ -74,7 +73,7 @@ export default function Register() {
         return;
       }
 
-      // Backend URL for registration (use environment variable if available)
+     
       const apiUrl = process.env.BACKEND_URL || 'https://deployment-todo-backend.onrender.com';
       
       const response = await axios.post(`${apiUrl}/auth/register`, data, {
@@ -83,7 +82,7 @@ export default function Register() {
         },
         withCredentials: true, 
       });
-      console.log(response.data); // Log response data for debugging
+      console.log(response.data); 
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
