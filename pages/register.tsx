@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
 import Select, { SingleValue, MultiValue } from 'react-select';
 import { AxiosError } from 'axios';
-const [isSubmitting, setIsSubmitting] = useState(false);
 
 type Option = { value: string; label: string };
 
