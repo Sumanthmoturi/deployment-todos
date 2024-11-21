@@ -74,7 +74,7 @@ export default function Register() {
       }
 
      
-      const apiUrl = process.env.BACKEND_URL || 'https://deployment-todo-backend.onrender.com';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
       
       const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
