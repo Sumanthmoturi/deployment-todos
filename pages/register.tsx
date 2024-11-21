@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
 import Select, { SingleValue, MultiValue } from 'react-select';
 import { AxiosError } from 'axios';
+const [isSubmitting, setIsSubmitting] = useState(false);
 
 type Option = { value: string; label: string };
 
@@ -45,14 +46,18 @@ export default function Register() {
   const [showOtherCountry, setShowOtherCountry] = useState(false);
   const [showOtherHobby, setShowOtherHobby] = useState(false);
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
+    setIsSubmitting(true); 
     console.log("Registration form data:",data);
 
     try {
+      // Perform any additional logic (like modifying country or hobbies here) as needed
       if ((data.country as Option).value === 'Other') {
         data.country = data.otherCountry || '';
       }
+
       if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
         data.hobbies = [
           ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
@@ -62,33 +67,37 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
+      // Perform validation for required fields
       if (!data.name || !data.email || !data.mobile || !data.password) {
         alert('All fields are required');
+        setIsSubmitting(false);  // Stop loading if validation fails
         return;
       }
 
-      
       if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
         alert('Please select or enter a country');
+        setIsSubmitting(false);  // Stop loading if validation fails
         return;
       }
 
-     
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
-      
+
+      // Send API request
       const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
-        withCredentials: true, 
+        withCredentials: true,
       });
-      console.log("Registration success:",response.data); 
+
+      console.log("Registration success:", response.data);
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
+      setIsSubmitting(false);  // Stop loading if an error occurs
       if (error instanceof AxiosError) {
         if (error.response?.status === 409) {
-          alert('Email or Mobile already exists!'); 
+          alert('Email or Mobile already exists!');
         } else {
           alert(`Error: ${error.response?.data.message || 'Unknown error occurred'}`);
         }
@@ -170,8 +179,11 @@ export default function Register() {
 
         <input
           {...register('email', { required: 'Email is required',
-         
-           })}
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: 'Invalid email format',
+            }
+          })}
           type="email"
           placeholder="Email"
         />
@@ -184,8 +196,8 @@ export default function Register() {
         />
         <p className={styles.error}>{errors.password?.message}</p>
 
-        <button type="submit" className={styles.registerButton}>
-          Register
+        <button type="submit" className={styles.registerButton} disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Register'}
         </button>
       </form>
     </div>
