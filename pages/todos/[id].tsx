@@ -11,14 +11,14 @@ type Todo = {
 
 export default function Todos() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string>(''); // Filter status
+  const [statusFilter, setStatusFilter] = useState<string>(''); 
 
   const fetchTodos = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/todo', {
         headers: { Authorization: `Bearer ${token}` },
-        params: { status: statusFilter || undefined }, // Filter by status if selected
+        params: { status: statusFilter || undefined },
       });
       setTodos(response.data as Todo[]);
     } catch (error) {
@@ -27,8 +27,8 @@ export default function Todos() {
   }, [statusFilter]); 
 
   useEffect(() => {
-    fetchTodos();
-  }, [fetchTodos]); 
+    if (statusFilter || !statusFilter) fetchTodos();
+  }, [statusFilter, fetchTodos]); 
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
@@ -95,4 +95,16 @@ export default function Todos() {
     </div>
   </div>
   );
+}
+
+export async function getServerSideProps() {
+  try {
+    const response = await axios.get('/todo'); // Fetch todos from your backend API
+    return {
+      props: { initialTodos: response.data },
+    };
+  } catch (error) {
+    console.error('Failed to fetch todos:', error);
+    return { props: { initialTodos: [] } };
+  }
 }

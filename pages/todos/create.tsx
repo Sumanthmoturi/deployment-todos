@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import axios from '../../utils/axios';  
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';  
@@ -24,12 +25,17 @@ export default function CreateTodo() {
   } = useForm<TodoFormInputs>(); 
   const router = useRouter();
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Token not found, please log in.');
+      router.push('/login');
+    }
+  }, [router]);
+
   const onSubmit = async (data: TodoFormInputs) => {
     const token = localStorage.getItem('token');
-
-
     const status = statusOptions.find(option => option.label === data.status)?.value || '';
-
     const payload = { ...data, status };
 
     try {

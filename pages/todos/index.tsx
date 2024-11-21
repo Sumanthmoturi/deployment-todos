@@ -97,7 +97,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    return { props: { initialTodos: response.data } };
+    return { props: { initialTodos: response.data }, revalidate: 60, };
   } catch (error) {
     console.error('Failed to fetch todos:', error);
     return { props: { initialTodos: [] } };

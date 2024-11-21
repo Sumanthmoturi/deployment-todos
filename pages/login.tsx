@@ -28,8 +28,8 @@ export default function Login() {
         console.error('Login Error:', err);
 
        
-        setError('mobile', { message: '' });
-        setError('password', { message: '' });
+    setError('mobile', { message: '' });
+    setError('password', { message: '' });
 
        
         const errorMessage = err.response?.data?.message;
