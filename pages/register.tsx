@@ -47,7 +47,7 @@ export default function Register() {
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-    console.log(data);
+    console.log("Registration form data:",data);
 
     try {
       if ((data.country as Option).value === 'Other') {
@@ -67,7 +67,7 @@ export default function Register() {
         return;
       }
 
-      // Ensure the country field is populated
+      
       if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
         alert('Please select or enter a country');
         return;
@@ -82,15 +82,15 @@ export default function Register() {
         },
         withCredentials: true, 
       });
-      console.log(response.data); 
+      console.log("Registration success:",response.data); 
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
-      if (error instanceof AxiosError && error.response) {
-        if (error.response.status === 409) {
-          alert(error.response.data.message); // Handle duplicate registration error
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 409) {
+          alert('Email or Mobile already exists!'); 
         } else {
-          alert('Registration failed. Please try again.');
+          alert(`Error: ${error.response?.data.message || 'Unknown error occurred'}`);
         }
       } else {
         alert('An unknown error occurred.');
@@ -169,7 +169,12 @@ export default function Register() {
         <p className={styles.error}>{errors.otherHobby?.message}</p>
 
         <input
-          {...register('email', { required: 'Email is required' })}
+          {...register('email', { required: 'Email is required',
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message:"Invalid email address",
+            },
+           })}
           type="email"
           placeholder="Email"
         />
