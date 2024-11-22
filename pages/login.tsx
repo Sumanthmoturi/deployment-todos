@@ -3,7 +3,7 @@ import axios from 'axios';
 import customAxios from '../utils/axios'; 
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
-
+import { useState } from 'react';
 
 type LoginFormData = {
   mobile: string;
@@ -13,9 +13,12 @@ type LoginFormData = {
 export default function Login() {
   const { register, handleSubmit, formState: { errors }, setError } = useForm<LoginFormData>();
   const router = useRouter();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
-    console.log('Login Data:', data);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       const response = await customAxios.post('/auth/login', data);
       console.log('Login Response:', response.data);
@@ -27,12 +30,7 @@ export default function Login() {
       if (axios.isAxiosError(err)) {
         console.error('Login Error:', err);
 
-       
-    setError('mobile', { message: '' });
-    setError('password', { message: '' });
-
-       
-        const errorMessage = err.response?.data?.message;
+      const errorMessage = err.response?.data?.message;
 
         if (errorMessage === 'Incorrect mobile number') {
           setError('mobile', { message: 'Incorrect mobile number' });
@@ -42,12 +40,14 @@ export default function Login() {
           setError('mobile', { message: 'Incorrect mobile number' });
           setError('password', { message: 'Incorrect password' });
         } else {
-          alert('Invalid Credentials');
+          alert('Login failed.Please try again');
         }
       } else {
         console.error('Unexpected Error:', err);
         alert('An unexpected error occurred. Please try again later.');
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -55,20 +55,38 @@ export default function Login() {
     <div className={styles.container}>
       <h2>Login</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input
-          {...register('mobile', { required: 'Mobile number is required' })}
+      <input
+          {...register('mobile', {
+            required: 'Mobile number is required',
+            pattern: {
+              value: /^[0-9]{10}$/,
+              message: 'Mobile number must be exactly 10 digits'
+            }
+          })}
           placeholder="Mobile"
+          disabled={isSubmitting}
         />
         {errors.mobile && <p className={styles.error}>{errors.mobile.message}</p>}
 
         <input
-          {...register('password', { required: 'Password is Required' })}
+          {...register('password', {
+            required: 'Password is required',
+            minLength: {
+              value: 5,
+              message: 'Password should be at least 5 characters long'
+            },
+            maxLength: {
+              value: 20,
+              message: 'Password should be at most 20 characters long'
+            }
+          })}
           type="password"
           placeholder="Password"
+          disabled={isSubmitting}
         />
         {errors.password && <p className={styles.error}>{errors.password.message}</p>}
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Logging in...' : 'Login'}</button>
       </form>
     </div>
   );
