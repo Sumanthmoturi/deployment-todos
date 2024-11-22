@@ -94,7 +94,7 @@ export default function Register() {
       setIsSubmitting(false);  
 
       if (error instanceof AxiosError) {
-        console.error('Axios error:', error.response?.data || error.message);
+       
         if (error.response?.status === 409) {
           alert('Email or Mobile already exists!');
         } else if (error.response?.data?.message) {
@@ -103,7 +103,6 @@ export default function Register() {
           alert('An unknown error occurred.');
         }
       } else {
-        console.error('Unknown error:', error);
         alert('An unknown error occurred.');
       }
     }
@@ -192,11 +191,25 @@ export default function Register() {
         <p className={styles.error}>{errors.email?.message}</p>
 
         <input
-          type="password"
-          {...register('password', { required: 'Password is required' })}
-          placeholder="Password"
-        />
-        <p className={styles.error}>{errors.password?.message}</p>
+  type="password"
+  {...register('password', {
+    required: 'Password is required',
+    minLength: {
+      value: 5,
+      message: 'Password should be at least 5 characters long',
+    },
+    maxLength: {
+      value: 20,
+      message: 'Password should be at most 20 characters long',
+    },
+    pattern: {
+      value: /[A-Za-z0-9!@#$%^&*(),.?":{}|<>]/,
+      message: 'Password must contain at least one special character and one number',
+    },
+  })}
+  placeholder="Password"
+/>
+<p className={styles.error}>{errors.password?.message}</p>
 
         <button type="submit" disabled={isSubmitting}>Register</button>
       </form>
