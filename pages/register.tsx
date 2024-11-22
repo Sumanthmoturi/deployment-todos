@@ -46,29 +46,31 @@ export default function Register() {
   const [showOtherHobby, setShowOtherHobby] = useState(false);
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     setIsSubmitting(true);
     console.log('Registration form data:', data);
-
+  
     try {
+      // Basic frontend validation
       if (!data.name || !data.email || !data.mobile || !data.password) {
         alert('All fields are required');
-        setIsSubmitting(false); 
+        setIsSubmitting(false);
         return;
       }
-
   
+      // Country validation
       if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
         alert('Please select or enter a country');
-        setIsSubmitting(false);  
+        setIsSubmitting(false);
         return;
       }
-
+  
       if ((data.country as Option).value === 'Other') {
         data.country = data.otherCountry || '';
       }
-
+  
+      // Handling 'Other' hobby
       if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
         data.hobbies = [
           ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
@@ -77,7 +79,8 @@ export default function Register() {
       } else {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
-
+  
+      // API call
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
       const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
@@ -85,25 +88,23 @@ export default function Register() {
         },
         withCredentials: true,
       });
+  
       console.log('Registration success:', response.data);
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
-      setIsSubmitting(false);  
-
-      if (error && (error as AxiosError).isAxiosError) {
-        const axiosError = error as AxiosError<{ response: { message: string } }>;
-
-        console.error('Axios error:', axiosError.response?.data || axiosError.message);
-
-        if (axiosError.response?.status === 400) {
-          if (axiosError.response?.data?.response) {
-            console.error('Error response:', axiosError.response?.data.response);
-            alert(`Error: ${axiosError.response?.data.response}`);
-          } else {
-            alert('Invalid input. Please check your form and try again.');
-          }
-        } else if (axiosError.response?.status === 409) {
+      setIsSubmitting(false);
+  
+      
+      if (error instanceof AxiosError) {
+        const errorResponse = error.response?.data;
+        if (errorResponse && Array.isArray(errorResponse.response)) {
+          alert(`Registration failed: \n${errorResponse.response.join('\n')}`);
+        } else {
+          alert('Invalid input. Please check your form and try again.');
+        }
+  
+        if (error.response?.status === 409) {
           alert('Email or Mobile already exists!');
         } else {
           alert('An unexpected server error occurred.');
@@ -114,6 +115,7 @@ export default function Register() {
       }
     }
   };
+
 
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
     setValue('country', selectedOption?.value || '');
