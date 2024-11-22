@@ -94,7 +94,7 @@ export default function Register() {
       setIsSubmitting(false);  
 
       if (error instanceof AxiosError) {
-       
+        console.error('Axios error:', error.response?.data || error.message);
         if (error.response?.status === 409) {
           alert('Email or Mobile already exists!');
         } else if (error.response?.data?.message) {
@@ -103,6 +103,7 @@ export default function Register() {
           alert('An unknown error occurred.');
         }
       } else {
+        console.error('Unknown error:', error);
         alert('An unknown error occurred.');
       }
     }
