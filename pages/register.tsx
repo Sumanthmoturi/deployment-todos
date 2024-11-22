@@ -46,28 +46,29 @@ export default function Register() {
   const [showOtherHobby, setShowOtherHobby] = useState(false);
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     setIsSubmitting(true);
     console.log('Registration form data:', data);
-  
+
     try {
       if (!data.name || !data.email || !data.mobile || !data.password) {
         alert('All fields are required');
-        setIsSubmitting(false);
+        setIsSubmitting(false); 
         return;
       }
+
   
       if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
         alert('Please select or enter a country');
-        setIsSubmitting(false);
+        setIsSubmitting(false);  
         return;
       }
-  
+
       if ((data.country as Option).value === 'Other') {
         data.country = data.otherCountry || '';
       }
-  
+
       if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
         data.hobbies = [
           ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
@@ -76,42 +77,36 @@ export default function Register() {
       } else {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
-  
+
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
+
       const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
         withCredentials: true,
       });
-  
+
       console.log('Registration success:', response.data);
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
-      setIsSubmitting(false);
-  
-      
+      setIsSubmitting(false);  
+
       if (error instanceof AxiosError) {
-        const errorResponse = error.response?.data;
-        if (errorResponse && Array.isArray(errorResponse.response)) {
-          alert(`Registration failed: \n${errorResponse.response.join('\n')}`);
-        } else {
-          alert('Invalid input. Please check your form and try again.');
-        }
-  
+       
         if (error.response?.status === 409) {
           alert('Email or Mobile already exists!');
+        } else if (error.response?.data?.message) {
+          alert(`Error: ${error.response.data.message}`);
         } else {
-          alert('An unexpected server error occurred.');
+          alert('An unknown error occurred.');
         }
       } else {
-        console.error('Unknown error:', error);
         alert('An unknown error occurred.');
       }
     }
   };
-
 
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
     setValue('country', selectedOption?.value || '');
@@ -138,15 +133,15 @@ export default function Register() {
         <p className={styles.error}>{errors.name?.message}</p>
 
         <input
-              {...register('mobile', { 
-                      required: 'Mobile is required', 
-                      pattern: {
-                           value: /^[0-9]{10}$/,
-                           message: 'Mobile must be 10 digits'
-              }
-            })}
-            placeholder="Mobile"
-        />
+  {...register('mobile', { 
+    required: 'Mobile is required', 
+    pattern: {
+      value: /^[0-9]{10}$/,
+      message: 'Mobile must be 10 digits'
+    }
+  })}
+  placeholder="Mobile"
+/>
         <p className={styles.error}>{errors.mobile?.message}</p>
 
         <select {...register('gender', { required: 'Gender is required' })} defaultValue="">
@@ -214,13 +209,13 @@ export default function Register() {
       message: 'Password should be at most 20 characters long',
     },
     pattern: {
-      value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{5,20}$/,
+      value: /[A-Za-z0-9!@#$%^&*(),.?":{}|<>]/,
       message: 'Password must contain at least one special character and one number',
     },
   })}
   placeholder="Password"
 />
-<p className={styles.error}>{errors.password?.message}</p>
+        <p className={styles.error}>{errors.password?.message}</p>
 
         <button type="submit" disabled={isSubmitting}>Register</button>
       </form>
