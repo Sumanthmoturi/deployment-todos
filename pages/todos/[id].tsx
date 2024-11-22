@@ -28,7 +28,7 @@ export default function Todos() {
 
   useEffect(() => {
     fetchTodos();
-  }, [fetchTodos]); 
+  }, [fetchTodos, statusFilter]); 
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
@@ -39,7 +39,9 @@ export default function Todos() {
       });
 
      
-      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: newStatus } : t)));
+      setTodos(prevTodos => 
+        prevTodos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t))
+      );
     } catch (error) {
       console.error('Failed to update todo status:', error);
       alert('Error updating the todo status');
