@@ -92,19 +92,19 @@
   top: 15%;
 }
 
-/* Media Queries for Responsiveness */
+
 @media (max-width: 900px) {
   .heading2 {
-    font-size: 3rem; /* Adjust font size for medium screens */
+    font-size: 3rem; 
   }
   .select {
-    font-size: 18px; /* Adjust select font size */
+    font-size: 18px; 
   }
   .todoItem {
-    width: 80%; /* Make todo item take up more width on medium screens */
+    width: 50%; 
   }
   .button1 {
-    font-size: 16px; /* Adjust button font size */
+    font-size: 16px; 
   }
 }
 
