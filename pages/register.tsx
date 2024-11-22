@@ -47,24 +47,24 @@ export default function Register() {
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
+  const handleCountryChange = (selectedOption: SingleValue<Option>) => {
+    setValue('country', selectedOption?.value || '');
+    setShowOtherCountry(selectedOption?.value === 'Other');
+    if (selectedOption?.value !== 'Other') {
+      setValue('otherCountry', ''); 
+    }
+  };
+
+  const handleHobbyChange = (selectedOptions: MultiValue<Option>) => {
+    setSelectedHobbies(selectedOptions);
+    setShowOtherHobby(selectedOptions.some((option) => option.value === 'Other'));
+  };
+
+
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
-    console.log('Registration form data:', data);
-
     try {
-      if (!data.name || !data.email || !data.mobile || !data.password) {
-        alert('All fields are required');
-        setIsSubmitting(false); 
-        return;
-      }
-
-  
-      if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
-        alert('Please select or enter a country');
-        setIsSubmitting(false);  
-        return;
-      }
-
       if ((data.country as Option).value === 'Other') {
         data.country = data.otherCountry || '';
       }
@@ -81,44 +81,28 @@ export default function Register() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
 
       const response = await axios.post(`${apiUrl}/auth/register`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       });
 
       console.log('Registration success:', response.data);
       alert('User registered successfully!');
       router.push('/login');
-    } catch (error: unknown) {
-      setIsSubmitting(false);  
-
-      if (error instanceof AxiosError) {
-       
-        if (error.response?.status === 409) {
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        const { status, data } = error.response;
+        if (status === 409) {
           alert('Email or Mobile already exists!');
-        } else if (error.response?.data?.message) {
-          alert(`Error: ${error.response.data.message}`);
         } else {
-          alert('An unknown error occurred.');
+          alert(data.message || 'An unexpected error occurred.');
         }
       } else {
+        console.error('Error during registration:', error);
         alert('An unknown error occurred.');
       }
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const handleCountryChange = (selectedOption: SingleValue<Option>) => {
-    setValue('country', selectedOption?.value || '');
-    setShowOtherCountry(selectedOption?.value === 'Other');
-    if (selectedOption?.value !== 'Other') {
-      setValue('otherCountry', ''); 
-    }
-  };
-
-  const handleHobbyChange = (selectedOptions: MultiValue<Option>) => {
-    setSelectedHobbies(selectedOptions);
-    setShowOtherHobby(selectedOptions.some((option) => option.value === 'Other'));
   };
 
   return (
