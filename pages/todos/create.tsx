@@ -20,16 +20,14 @@ export default function CreateTodo() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<TodoFormInputs>(); 
   const router = useRouter();
 
   const onSubmit = async (data: TodoFormInputs) => {
     const token = localStorage.getItem('token');
-
-
     const status = statusOptions.find(option => option.label === data.status)?.value || '';
-
     const payload = { ...data, status };
 
     try {
@@ -40,7 +38,16 @@ export default function CreateTodo() {
       router.push('/todos');
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        alert(`Error: ${error.response?.data.message}`);
+        const errorMessage = error.response?.data?.message;
+        if (errorMessage === 'Name is required') {
+          setError('name', { message: 'Name is required' });
+        } else if (errorMessage === 'Description is required') {
+          setError('description', { message: 'Description is required' });
+        } else if (errorMessage === 'Invalid status') {
+          setError('status', { message: 'Please select a valid status' });
+        } else {
+          alert(`Error: ${errorMessage}`);
+        }
       } else {
         alert('Something went wrong');
       }
@@ -52,20 +59,43 @@ export default function CreateTodo() {
       <h2>Create Todo</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input
-          {...register('name', { required: 'Name is required' })}
+      <input
+          {...register('name', {
+            required: 'Name is required',
+            maxLength: {
+              value: 50,
+              message: 'Name cannot exceed 50 characters',
+            },
+          })}
           placeholder="Name"
         />
         {errors.name && <p className={styles.error}>{String(errors.name.message)}</p>}
 
         <input
-          {...register('description', { required: 'Description is required' })}
+          {...register('description', {
+            required: 'Description is required',
+            maxLength: {
+              value: 200,
+              message: 'Description cannot exceed 200 characters',
+            },
+          })}
           placeholder="Description"
         />
         {errors.description && <p className={styles.error}>{String(errors.description.message)}</p>}
 
         <input
-          {...register('time', { required: 'Time is required' })}
+          {...register('time', {
+            required: 'Time is required',
+            valueAsNumber: true,
+            min: {
+              value: 1,
+              message: 'Time must be at least 1 hour',
+            },
+            max: {
+              value: 24,
+              message: 'Time cannot exceed 24 hours',
+            },
+          })}
           placeholder="Time in Hours"
           type="number"
         />
