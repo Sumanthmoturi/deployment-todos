@@ -52,14 +52,12 @@ export default function Register() {
     console.log('Registration form data:', data);
   
     try {
-      // Basic frontend validation
       if (!data.name || !data.email || !data.mobile || !data.password) {
         alert('All fields are required');
         setIsSubmitting(false);
         return;
       }
   
-      // Country validation
       if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
         alert('Please select or enter a country');
         setIsSubmitting(false);
@@ -70,7 +68,6 @@ export default function Register() {
         data.country = data.otherCountry || '';
       }
   
-      // Handling 'Other' hobby
       if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
         data.hobbies = [
           ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
@@ -80,7 +77,6 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
   
-      // API call
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
       const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
@@ -142,8 +138,14 @@ export default function Register() {
         <p className={styles.error}>{errors.name?.message}</p>
 
         <input
-          {...register('mobile', { required: 'Mobile is required' })}
-          placeholder="Mobile"
+              {...register('mobile', { 
+                      required: 'Mobile is required', 
+                      pattern: {
+                           value: /^[0-9]{10}$/,
+                           message: 'Mobile must be 10 digits'
+              }
+            })}
+            placeholder="Mobile"
         />
         <p className={styles.error}>{errors.mobile?.message}</p>
 
@@ -212,7 +214,7 @@ export default function Register() {
       message: 'Password should be at most 20 characters long',
     },
     pattern: {
-      value: /[A-Za-z0-9!@#$%^&*(),.?":{}|<>]/,
+      value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{5,20}$/,
       message: 'Password must contain at least one special character and one number',
     },
   })}
