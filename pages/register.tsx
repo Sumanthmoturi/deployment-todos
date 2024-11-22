@@ -78,36 +78,42 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
-
-      const response = await axios.post(`${apiUrl}/auth/register`, data, {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
+    const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
         withCredentials: true,
       });
-
       console.log('Registration success:', response.data);
       alert('User registered successfully!');
       router.push('/login');
     } catch (error: unknown) {
       setIsSubmitting(false);  
 
-      if (error instanceof AxiosError) {
-       
-        if (error.response?.status === 409) {
-          alert('Email or Mobile already exists!');
-        } else if (error.response?.data?.message) {
-          alert(`Error: ${error.response.data.message}`);
+   if (error && (error as AxiosError).isAxiosError) {
+      const axiosError = error as AxiosError<{ message: string }>;
+
+      console.error('Axios error:', axiosError.response?.data || axiosError.message);
+      if (axiosError.response?.status === 409) {
+        alert('Email or Mobile already exists!');
+      } else if (axiosError.response?.status === 400) {
+        if (axiosError.response?.data?.message) {
+          console.error('Error response:', axiosError.response?.data);
+          alert(`Error: ${axiosError.response?.data?.message}`);
         } else {
-          alert('An unknown error occurred.');
+          alert('Invalid input. Please check your form and try again.');
         }
       } else {
-        alert('An unknown error occurred.');
+       
+        alert('An unexpected server error occurred.');
       }
+    } else {
+      console.error('Unknown error:', error);
+      alert('An unknown error occurred.');
     }
-  };
-
+  }
+};
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
     setValue('country', selectedOption?.value || '');
     setShowOtherCountry(selectedOption?.value === 'Other');
