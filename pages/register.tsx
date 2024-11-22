@@ -91,29 +91,33 @@ export default function Register() {
     } catch (error: unknown) {
       setIsSubmitting(false);  
 
-   if (error && (error as AxiosError).isAxiosError) {
-      const axiosError = error as AxiosError<{ message: string }>;
+     if (error && (error as AxiosError).isAxiosError) {
+      const axiosError = error as AxiosError<{ response: { message: string } }>;
 
       console.error('Axios error:', axiosError.response?.data || axiosError.message);
-      if (axiosError.response?.status === 409) {
-        alert('Email or Mobile already exists!');
-      } else if (axiosError.response?.status === 400) {
-        if (axiosError.response?.data?.message) {
-          console.error('Error response:', axiosError.response?.data);
-          alert(`Error: ${axiosError.response?.data?.message}`);
+
+      // Check if response contains specific structured error
+      if (axiosError.response?.status === 400) {
+        // Check if response contains error message
+        if (axiosError.response?.data?.response) {
+          console.error('Error response:', axiosError.response?.data.response);
+          alert(`Error: ${axiosError.response?.data.response}`);
         } else {
           alert('Invalid input. Please check your form and try again.');
         }
+      } else if (axiosError.response?.status === 409) {
+        alert('Email or Mobile already exists!');
       } else {
-       
         alert('An unexpected server error occurred.');
       }
     } else {
+      // Handle other unknown errors
       console.error('Unknown error:', error);
       alert('An unknown error occurred.');
     }
   }
 };
+
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
     setValue('country', selectedOption?.value || '');
     setShowOtherCountry(selectedOption?.value === 'Other');
