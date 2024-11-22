@@ -78,8 +78,8 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
-    const response = await axios.post(`${apiUrl}/auth/register`, data, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
+      const response = await axios.post(`${apiUrl}/auth/register`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -91,32 +91,29 @@ export default function Register() {
     } catch (error: unknown) {
       setIsSubmitting(false);  
 
-     if (error && (error as AxiosError).isAxiosError) {
-      const axiosError = error as AxiosError<{ response: { message: string } }>;
+      if (error && (error as AxiosError).isAxiosError) {
+        const axiosError = error as AxiosError<{ response: { message: string } }>;
 
-      console.error('Axios error:', axiosError.response?.data || axiosError.message);
+        console.error('Axios error:', axiosError.response?.data || axiosError.message);
 
-      // Check if response contains specific structured error
-      if (axiosError.response?.status === 400) {
-        // Check if response contains error message
-        if (axiosError.response?.data?.response) {
-          console.error('Error response:', axiosError.response?.data.response);
-          alert(`Error: ${axiosError.response?.data.response}`);
+        if (axiosError.response?.status === 400) {
+          if (axiosError.response?.data?.response) {
+            console.error('Error response:', axiosError.response?.data.response);
+            alert(`Error: ${axiosError.response?.data.response}`);
+          } else {
+            alert('Invalid input. Please check your form and try again.');
+          }
+        } else if (axiosError.response?.status === 409) {
+          alert('Email or Mobile already exists!');
         } else {
-          alert('Invalid input. Please check your form and try again.');
+          alert('An unexpected server error occurred.');
         }
-      } else if (axiosError.response?.status === 409) {
-        alert('Email or Mobile already exists!');
       } else {
-        alert('An unexpected server error occurred.');
+        console.error('Unknown error:', error);
+        alert('An unknown error occurred.');
       }
-    } else {
-      // Handle other unknown errors
-      console.error('Unknown error:', error);
-      alert('An unknown error occurred.');
     }
-  }
-};
+  };
 
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
     setValue('country', selectedOption?.value || '');
