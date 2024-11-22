@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from '../../utils/axios';  
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';  
@@ -25,12 +25,19 @@ export default function CreateTodo() {
   } = useForm<TodoFormInputs>(); 
   const router = useRouter();
 
-  const onSubmit = async (data: TodoFormInputs) => {
+  const onSubmit: SubmitHandler<TodoFormInputs> = async (data) => {
     const token = localStorage.getItem('token');
+
     const status = statusOptions.find(option => option.label === data.status)?.value || '';
     const payload = { ...data, status };
 
     try {
+      // Ensure token is available
+      if (!token) {
+        alert('Authentication token is missing. Please log in again.');
+        return router.push('/login');
+      }
+
       await axios.post('/todo', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -39,6 +46,8 @@ export default function CreateTodo() {
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         const errorMessage = error.response?.data?.message;
+
+        // Handle specific error messages
         if (errorMessage === 'Name is required') {
           setError('name', { message: 'Name is required' });
         } else if (errorMessage === 'Description is required') {
@@ -59,7 +68,8 @@ export default function CreateTodo() {
       <h2>Create Todo</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-      <input
+        {/* Name Field */}
+        <input
           {...register('name', {
             required: 'Name is required',
             maxLength: {
@@ -69,8 +79,9 @@ export default function CreateTodo() {
           })}
           placeholder="Name"
         />
-        {errors.name && <p className={styles.error}>{String(errors.name.message)}</p>}
+        {errors.name && <p className={styles.error}>{errors.name.message}</p>}
 
+        {/* Description Field */}
         <input
           {...register('description', {
             required: 'Description is required',
@@ -81,8 +92,9 @@ export default function CreateTodo() {
           })}
           placeholder="Description"
         />
-        {errors.description && <p className={styles.error}>{String(errors.description.message)}</p>}
+        {errors.description && <p className={styles.error}>{errors.description.message}</p>}
 
+        {/* Time Field */}
         <input
           {...register('time', {
             required: 'Time is required',
@@ -99,10 +111,14 @@ export default function CreateTodo() {
           placeholder="Time in Hours"
           type="number"
         />
-        {errors.time && <p className={styles.error}>{String(errors.time.message)}</p>}
+        {errors.time && <p className={styles.error}>{errors.time.message}</p>}
 
+        {/* Status Dropdown */}
         <select
-          {...register('status', { required: 'Status is required' })}
+          {...register('status', {
+            required: 'Status is required',
+            validate: (value) => !!statusOptions.find(option => option.label === value) || 'Invalid status',
+          })}
         >
           <option value="" disabled hidden>Select Status</option>
           {statusOptions.map(option => (
@@ -111,7 +127,7 @@ export default function CreateTodo() {
             </option>
           ))}
         </select>
-        {errors.status && <p className={styles.error}>{String(errors.status.message)}</p>}
+        {errors.status && <p className={styles.error}>{errors.status.message}</p>}
 
         <button type="submit">Create</button>
       </form>
