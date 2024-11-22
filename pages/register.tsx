@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form'; // Use SubmitHandler for better type handling
+import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
@@ -30,7 +30,7 @@ type FormData = {
   name: string;
   mobile: string;
   gender: string;
-  country: Option | string;
+  country: string;
   otherCountry?: string;
   hobbies: string[];
   otherHobby?: string;
@@ -47,85 +47,42 @@ export default function Register() {
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  
-const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-  setIsSubmitting(true);
-  console.log('Registration form data:', data);
-
-  try {
-    // Basic frontend validation
-    if (!data.name || !data.email || !data.mobile || !data.password) {
-      alert('All fields are required');
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Country validation
-    if (!data.country || (data.country === 'Other' && !data.otherCountry)) {
-      alert('Please select or enter a country');
-      setIsSubmitting(false);
-      return;
-    }
-
-    if ((data.country as Option).value === 'Other') {
-      data.country = data.otherCountry || '';
-    }
-
-    // Handling 'Other' hobby
-    if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
-      data.hobbies = [
-        ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
-        data.otherHobby || '',
-      ];
-    } else {
-      data.hobbies = selectedHobbies.map((hobby) => hobby.label);
-    }
-
-    // API call
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://deployment-todo-backend.onrender.com';
-    const response = await axios.post(`${apiUrl}/auth/register`, data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
-    });
-
-    console.log('Registration success:', response.data);
-    alert('User registered successfully!');
-    router.push('/login');
-  } catch (error: unknown) {
-    setIsSubmitting(false);
-
-    // Type assertion for AxiosError
-    if (error instanceof AxiosError) {
-      // Safely access the response data
-      const errorResponse = error.response?.data;
-      
-      // Ensure the response data has the expected structure
-      if (errorResponse && Array.isArray(errorResponse.response)) {
-        alert(`Registration failed: \n${errorResponse.response.join('\n')}`);
-      } else {
-        alert('Invalid input. Please check your form and try again.');
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setIsSubmitting(true);
+    try {
+      if ((data.country as any).value === 'Other') {
+        data.country = data.otherCountry || '';
       }
 
-      // Handling other specific status codes
-      if (error.response?.status === 409) {
-        alert('Email or Mobile already exists!');
+      if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
+        data.hobbies = [
+          ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
+          data.otherHobby || '',
+        ];
       } else {
-        alert('An unexpected server error occurred.');
+        data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
-    } else {
-      console.error('Unknown error:', error);
-      alert('An unknown error occurred.');
+
+      const response = await axios.post('/auth/register', data);
+      alert('Registration successful!');
+      router.push('/login');
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response?.data) {
+        const errorResponse = error.response.data.message || error.response.data.error;
+        alert(`Registration failed: ${errorResponse}`);
+      } else {
+        alert('An unexpected error occurred.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-  }
-};
+  };
 
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
     setValue('country', selectedOption?.value || '');
     setShowOtherCountry(selectedOption?.value === 'Other');
     if (selectedOption?.value !== 'Other') {
-      setValue('otherCountry', ''); 
+      setValue('otherCountry', '');
     }
   };
 
