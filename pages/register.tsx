@@ -79,10 +79,12 @@ export default function Register() {
 
       await checkIfExists('email', data.email);
       await checkIfExists('mobile', data.mobile);
-
+    
+      if (Object.keys(errors).length === 0) {
       const response = await axios.post('/auth/register', data);
       alert('Registration successful!');
       router.push('/login');
+      }
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data) {
         const errorResponse = error.response.data.message || error.response.data.error;
@@ -116,7 +118,7 @@ export default function Register() {
         <input
           {...register('name', { required: 'Name is required' })}
           placeholder="Name"   
-          className={errors.name ? 'errorField' : ''}
+          className={errors.name ? styles.errorField : ''}
         />
         <p className={styles.error}>{errors.name?.message}</p>
 
@@ -129,7 +131,7 @@ export default function Register() {
             }
           })}
           placeholder="Mobile"
-          className={errors.mobile ? 'errorField' : ''}
+          className={errors.name ? styles.errorField : ''}
         />
         <p className={styles.error}>{errors.mobile?.message}</p>
 
@@ -144,6 +146,7 @@ export default function Register() {
           options={countries}
           onChange={handleCountryChange}
           placeholder="Select Country"
+          className={errors.name ? styles.errorField : ''}
         />
         <p className={styles.error}>{errors.country?.message}</p>
 
@@ -151,7 +154,7 @@ export default function Register() {
           <input
             {...register('otherCountry', { required: 'Enter your country' })}
             placeholder="Enter your country"
-            className={errors.mobile ? 'errorField' : ''}
+            className={errors.name ? styles.errorField : ''}
           />
         )}
         <p className={styles.error}>{errors.otherCountry?.message}</p>
@@ -163,6 +166,7 @@ export default function Register() {
           placeholder="Select Hobby"
           classNamePrefix="react-select"
           className={styles.multiSelect}
+          
         />
         <p className={styles.error}>{errors.hobbies?.message}</p>
 
@@ -170,7 +174,7 @@ export default function Register() {
           <input
             {...register('otherHobby', { required: 'Enter your hobby' })}
             placeholder="Enter your hobby"
-            className={errors.mobile ? 'errorField' : ''}
+            className={errors.hobbies ? styles.errorField : ''}
           />
         )}
         <p className={styles.error}>{errors.otherHobby?.message}</p>
@@ -184,7 +188,7 @@ export default function Register() {
             }
           })}
           placeholder="Email"
-          className={errors.mobile ? 'errorField' : ''}
+          className={errors.hobbies ? styles.errorField : ''}
         />
         <p className={styles.error}>{errors.email?.message}</p>
 
@@ -206,7 +210,7 @@ export default function Register() {
     },
   })}
   placeholder="Password"
-  className={errors.mobile ? 'errorField' : ''}
+  className={errors.hobbies ? styles.errorField : ''}
 />
         <p className={styles.error}>{errors.password?.message}</p>
 
