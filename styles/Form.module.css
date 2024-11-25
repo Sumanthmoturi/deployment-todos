@@ -1,4 +1,4 @@
-/* Main container styles */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -26,11 +26,11 @@
 @media (max-width: 600px) {
   .container h1,
   .container h2 {
-    font-size: 1.5rem; /* Adjust heading size for small screens */
+    font-size: 1.5rem; 
   }
 }
 
-/* Form container styles */
+
 .container form {
   display: flex;
   flex-direction: column;
@@ -42,7 +42,7 @@
   border-radius: 3px;
 }
 
-/* Input and select box styles */
+
 .container input,
 .container select {
   padding: 12px;
@@ -55,6 +55,12 @@
   transition: border-color 0.3s ease-in-out;
 }
 
+.container input.errorField,
+.container select.errorField {
+  border-color: red;
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
 .container input:focus,
 .container select:focus {
   outline: none;
@@ -62,7 +68,7 @@
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
-/* Button styles */
+
 .container button {
   padding: 10px 20px;
   background-color: #13cc13;
@@ -78,19 +84,20 @@
   background-color: #911c1c;
 }
 
-/* Error message styles */
+
 .container .error {
   color: red;
   font-size: 0.9rem;
   margin-top: -8px;
   margin-bottom: 8px;
   font-weight: bold;
+  text-align:left;
 }
 
-/* Mobile-first responsiveness */
+
 @media (max-width: 600px) {
   .container {
-    padding: 10px; /* Reduce padding for smaller screens */
+    padding: 10px; 
   }
 
   .container form {
@@ -101,11 +108,11 @@
   .container select,
   .container button {
     padding: 10px;
-    font-size: 0.9rem; /* Slightly smaller font size for mobile */
+    font-size: 0.9rem; 
   }
 }
 
-/* For tablets (600px to 900px) */
+
 @media (min-width: 600px) and (max-width: 900px) {
   .container form {
     max-width: 500px;
@@ -117,15 +124,21 @@
   }
 }
 
-/* For large screens (900px and above) */
+
 @media (min-width: 900px) {
   .container form {
-    max-width: 700px; /* Slightly larger form for bigger screens */
+    max-width: 700px; 
   }
 
   .container input,
   .container select {
     padding: 15px;
-    font-size: 1.1rem; /* Slightly bigger font for readability */
+    font-size: 1.1rem;
   }
+}
+
+
+.errorField {
+  border: 1px solid red;
+  box-shadow: 0 0 5px red;
 }

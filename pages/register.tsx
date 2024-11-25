@@ -39,13 +39,27 @@ type FormData = {
 };
 
 export default function Register() {
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>();
+  const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm<FormData>();
   const router = useRouter();
 
   const [showOtherCountry, setShowOtherCountry] = useState(false);
   const [showOtherHobby, setShowOtherHobby] = useState(false);
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const checkIfExists = async (field: 'email' | 'mobile', value: string) => {
+    try {
+      const response = await axios.get(`/check-${field}?${field}=${value}`);
+      if (response.data.exists) {
+        setError(field, {
+          type: 'manual',
+          message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
+        });
+      }
+    } catch (error) {
+      console.error(`Error checking ${field}:`, error);
+    }
+  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
@@ -62,6 +76,9 @@ export default function Register() {
       } else {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
+
+      await checkIfExists('email', data.email);
+      await checkIfExists('mobile', data.mobile);
 
       const response = await axios.post('/auth/register', data);
       alert('Registration successful!');
@@ -98,7 +115,8 @@ export default function Register() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
           {...register('name', { required: 'Name is required' })}
-          placeholder="Name"
+          placeholder="Name"   
+          className={errors.name ? 'errorField' : ''}
         />
         <p className={styles.error}>{errors.name?.message}</p>
 
@@ -111,6 +129,7 @@ export default function Register() {
             }
           })}
           placeholder="Mobile"
+          className={errors.mobile ? 'errorField' : ''}
         />
         <p className={styles.error}>{errors.mobile?.message}</p>
 
@@ -132,6 +151,7 @@ export default function Register() {
           <input
             {...register('otherCountry', { required: 'Enter your country' })}
             placeholder="Enter your country"
+            className={errors.mobile ? 'errorField' : ''}
           />
         )}
         <p className={styles.error}>{errors.otherCountry?.message}</p>
@@ -150,6 +170,7 @@ export default function Register() {
           <input
             {...register('otherHobby', { required: 'Enter your hobby' })}
             placeholder="Enter your hobby"
+            className={errors.mobile ? 'errorField' : ''}
           />
         )}
         <p className={styles.error}>{errors.otherHobby?.message}</p>
@@ -163,6 +184,7 @@ export default function Register() {
             }
           })}
           placeholder="Email"
+          className={errors.mobile ? 'errorField' : ''}
         />
         <p className={styles.error}>{errors.email?.message}</p>
 
@@ -184,6 +206,7 @@ export default function Register() {
     },
   })}
   placeholder="Password"
+  className={errors.mobile ? 'errorField' : ''}
 />
         <p className={styles.error}>{errors.password?.message}</p>
 
