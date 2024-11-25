@@ -151,7 +151,7 @@ export default function Register() {
             }
           })}
           placeholder="Mobile"
-          className={existingMobile || errors.mobile ? styles.errorField : ''}
+          className={`${styles.input} ${existingMobile || errors.mobile ? styles.errorField : ''}`}
         />
         {existingMobile && <p className={styles.warning}>Mobile number already exists</p>}
         <p className={styles.error}>{errors.mobile?.message}</p>
@@ -206,7 +206,7 @@ export default function Register() {
             }
           })}
           placeholder="Email"
-          className={existingEmail || errors.email ? styles.errorField : ''}
+          className={`${styles.input} ${existingEmail || errors.email ? styles.errorField : ''}`}
         />
         {existingEmail && <p className={styles.warning}>Email already exists</p>}
         <p className={styles.error}>{errors.email?.message}</p>
