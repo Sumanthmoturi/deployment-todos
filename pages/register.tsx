@@ -131,11 +131,11 @@ export default function Register() {
             }
           })}
           placeholder="Mobile"
-          className={errors.name ? styles.errorField : ''}
+          className={errors.mobile ? styles.errorField : ''}
         />
         <p className={styles.error}>{errors.mobile?.message}</p>
 
-        <select {...register('gender', { required: 'Gender is required' })} defaultValue="">
+        <select {...register('gender', { required: 'Gender is required' })} defaultValue="" className={errors.gender ? styles.errorField : ''}>
           <option value="" disabled hidden>Select Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
@@ -146,7 +146,6 @@ export default function Register() {
           options={countries}
           onChange={handleCountryChange}
           placeholder="Select Country"
-          className={errors.name ? styles.errorField : ''}
         />
         <p className={styles.error}>{errors.country?.message}</p>
 
@@ -154,7 +153,6 @@ export default function Register() {
           <input
             {...register('otherCountry', { required: 'Enter your country' })}
             placeholder="Enter your country"
-            className={errors.name ? styles.errorField : ''}
           />
         )}
         <p className={styles.error}>{errors.otherCountry?.message}</p>
@@ -174,7 +172,6 @@ export default function Register() {
           <input
             {...register('otherHobby', { required: 'Enter your hobby' })}
             placeholder="Enter your hobby"
-            className={errors.hobbies ? styles.errorField : ''}
           />
         )}
         <p className={styles.error}>{errors.otherHobby?.message}</p>
@@ -188,7 +185,7 @@ export default function Register() {
             }
           })}
           placeholder="Email"
-          className={errors.hobbies ? styles.errorField : ''}
+          className={errors.email ? styles.errorField : ''}
         />
         <p className={styles.error}>{errors.email?.message}</p>
 
@@ -210,7 +207,7 @@ export default function Register() {
     },
   })}
   placeholder="Password"
-  className={errors.hobbies ? styles.errorField : ''}
+  className={errors.password ? styles.errorField : ''}
 />
         <p className={styles.error}>{errors.password?.message}</p>
 
