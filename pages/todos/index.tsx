@@ -1,6 +1,5 @@
 import { GetServerSidePropsContext } from 'next'; 
 import axios from '../../utils/axios';
-import Link from 'next/link';
 import styles from '../../styles/Todos.module.css';
 import { useEffect, useState } from 'react';
 
@@ -90,16 +89,25 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const token = context.req.cookies['token'];
+  const token = context.req.cookies.token;
 
   try {
     const response = await axios.get('/todo', {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    return { props: { initialTodos: response.data } };
+    return {
+      props: {
+        initialTodos: response.data,
+      },
+    };
   } catch (error) {
     console.error('Failed to fetch todos:', error);
-    return { props: { initialTodos: [] } };
+    return {
+      props: {
+        initialTodos: [],
+      },
+    };
   }
 }
+

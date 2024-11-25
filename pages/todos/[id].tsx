@@ -11,7 +11,7 @@ type Todo = {
 
 export default function Todos() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string>(''); // Filter status
+  const [statusFilter, setStatusFilter] = useState<string>(''); 
 
   useEffect(() => {
     fetchTodos();

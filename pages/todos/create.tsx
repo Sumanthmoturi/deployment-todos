@@ -5,8 +5,8 @@ import { AxiosError } from 'axios';
 import styles from '../../styles/Form.module.css';
 
 const statusOptions = [
-  { value: 'in progress', label: 'In Progress' },
-  { value: 'completed', label: 'Completed' },
+  { value: 'In progress', label: 'In Progress' },
+  { value: 'Completed', label: 'Completed' },
 ];
 
 export default function CreateTodo() {
@@ -14,17 +14,13 @@ export default function CreateTodo() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    setError,
   } = useForm();
   const router = useRouter();
 
   const onSubmit = async (data: any) => {
     const token = localStorage.getItem('token');
-
-    // Make sure status is stored as a string (either "in progress" or "completed")
     const status = statusOptions.find(option => option.label === data.status)?.value || '';
-
-    // Add status as a string to the data before sending to the API
     const payload = { ...data, status };
 
     try {
@@ -35,19 +31,24 @@ export default function CreateTodo() {
       router.push('/todos');
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        alert(`Error: ${error.response?.data.message}`);
+        if (error.response?.data.message.includes('Name already exists')) {
+          setError("name", {
+            type: "manual",
+            message: "This name already exists. Please choose another one.",
+          });
+        } else {
+          alert(`Error: ${error.response?.data.message}`);
+        }
       } else {
         alert('Something went wrong');
       }
     }
   };
-
   return (
     <div className={styles.container}>
       <h2>Create Todo</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Name Field */}
         <input
           {...register('name', {
             required: 'Name is required',
@@ -60,7 +61,6 @@ export default function CreateTodo() {
         />
         {errors.name && <p className={styles.error}>{String(errors.name.message)}</p>}
 
-        {/* Description Field */}
         <input
           {...register('description', {
             required: 'Description is required',
@@ -73,7 +73,6 @@ export default function CreateTodo() {
         />
         {errors.description && <p className={styles.error}>{String(errors.description.message)}</p>}
 
-        {/* Time Field */}
         <input
           {...register('time', {
             required: 'Time is required',
