@@ -49,25 +49,31 @@ export default function Register() {
   const [existingEmail, setExistingEmail] = useState(false);
   const [existingMobile, setExistingMobile] = useState(false);
 
-  
   const checkIfExists = async (field: 'email' | 'mobile', value: string) => {
     try {
       const response = await axios.get(`/check-${field}?${field}=${value}`);
-      console.log(response);
       if (response.data.exists) {
         if (field === 'email') {
           setExistingEmail(true);
+          setError('email', {
+            type: 'manual',
+            message: 'Email already exists',
+          });
         } else if (field === 'mobile') {
           setExistingMobile(true);
+          setError('mobile', {
+            type: 'manual',
+            message: 'Mobile number already exists',
+          });
         }
-        setError(field, {
-          type: 'manual',
-          message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
-        });
       } else {
-        if (field === 'email') setExistingEmail(false);
-        if (field === 'mobile') setExistingMobile(false);
-        clearErrors(field);
+        if (field === 'email') {
+          setExistingEmail(false);
+          clearErrors('email');
+        } else if (field === 'mobile') {
+          setExistingMobile(false);
+          clearErrors('mobile');
+        }
       }
     } catch (error) {
       console.error(`Error checking ${field}:`, error);
