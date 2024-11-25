@@ -1,7 +1,8 @@
 import { GetServerSidePropsContext } from 'next'; 
 import axios from '../../utils/axios';
+import Link from 'next/link';
 import styles from '../../styles/Todos.module.css';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 
 type Todo = {
   id: number;
@@ -18,8 +19,11 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  
-  const fetchFilteredTodos = useCallback(async () => {
+  useEffect(() => {
+    if (statusFilter) fetchFilteredTodos();
+  }, [statusFilter]);
+
+  const fetchFilteredTodos = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/todo', {
@@ -30,11 +34,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     } catch (error) {
       console.error('Failed to fetch filtered todos:', error);
     }
-  }, [statusFilter]); // Dependency on statusFilter
-
-  useEffect(() => {
-    if (statusFilter) fetchFilteredTodos();
-  }, [statusFilter, fetchFilteredTodos]); // Added fetchFilteredTodos to the dependency array
+  };
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
@@ -44,9 +44,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setTodos(prevTodos => 
-        prevTodos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t))
-      );
+      setTodos(todos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t)));
     } catch (error) {
       console.error('Failed to update todo status:', error);
       alert('Error updating the todo status');

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
 
@@ -13,7 +13,11 @@ export default function Todos() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>(''); // Filter status
 
-  const fetchTodos = useCallback(async () => {
+  useEffect(() => {
+    fetchTodos();
+  }, [statusFilter]); 
+
+  const fetchTodos = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/todo', {
@@ -24,11 +28,7 @@ export default function Todos() {
     } catch (error) {
       console.error('Failed to fetch todos:', error);
     }
-  }, [statusFilter]); 
-
-  useEffect(() => {
-    fetchTodos();
-  }, [fetchTodos, statusFilter]); 
+  };
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
@@ -39,9 +39,7 @@ export default function Todos() {
       });
 
      
-      setTodos(prevTodos => 
-        prevTodos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t))
-      );
+      setTodos(todos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t)));
     } catch (error) {
       console.error('Failed to update todo status:', error);
       alert('Error updating the todo status');
