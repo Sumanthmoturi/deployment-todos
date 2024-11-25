@@ -39,7 +39,7 @@ type FormData = {
 };
 
 export default function Register() {
-  const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm<FormData>();
+  const { register, handleSubmit,clearErrors, formState: { errors }, setValue, setError } = useForm<FormData>();
   const router = useRouter();
 
   const [showOtherCountry, setShowOtherCountry] = useState(false);
@@ -53,6 +53,7 @@ export default function Register() {
   const checkIfExists = async (field: 'email' | 'mobile', value: string) => {
     try {
       const response = await axios.get(`/check-${field}?${field}=${value}`);
+      console.log(response);
       if (response.data.exists) {
         if (field === 'email') {
           setExistingEmail(true);
@@ -66,6 +67,7 @@ export default function Register() {
       } else {
         if (field === 'email') setExistingEmail(false);
         if (field === 'mobile') setExistingMobile(false);
+        clearErrors(field);
       }
     } catch (error) {
       console.error(`Error checking ${field}:`, error);
@@ -93,6 +95,7 @@ export default function Register() {
     
       if (Object.keys(errors).length === 0 && !existingEmail && !existingMobile) {
       const response = await axios.post('/auth/register', data);
+      console.log(response)
       alert('Registration successful!');
       router.push('/login');
       }
