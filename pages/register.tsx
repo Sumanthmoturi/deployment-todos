@@ -46,15 +46,26 @@ export default function Register() {
   const [showOtherHobby, setShowOtherHobby] = useState(false);
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [existingEmail, setExistingEmail] = useState(false);
+  const [existingMobile, setExistingMobile] = useState(false);
+
   
   const checkIfExists = async (field: 'email' | 'mobile', value: string) => {
     try {
       const response = await axios.get(`/check-${field}?${field}=${value}`);
       if (response.data.exists) {
+        if (field === 'email') {
+          setExistingEmail(true);
+        } else if (field === 'mobile') {
+          setExistingMobile(true);
+        }
         setError(field, {
           type: 'manual',
           message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
         });
+      } else {
+        if (field === 'email') setExistingEmail(false);
+        if (field === 'mobile') setExistingMobile(false);
       }
     } catch (error) {
       console.error(`Error checking ${field}:`, error);
@@ -80,7 +91,7 @@ export default function Register() {
       await checkIfExists('email', data.email);
       await checkIfExists('mobile', data.mobile);
     
-      if (Object.keys(errors).length === 0) {
+      if (Object.keys(errors).length === 0 && !existingEmail && !existingMobile) {
       const response = await axios.post('/auth/register', data);
       alert('Registration successful!');
       router.push('/login');
@@ -131,8 +142,9 @@ export default function Register() {
             }
           })}
           placeholder="Mobile"
-          className={errors.mobile ? styles.errorField : ''}
+          className={existingMobile || errors.mobile ? styles.errorField : ''}
         />
+        {existingMobile && <p className={styles.warning}>Mobile number already exists</p>}
         <p className={styles.error}>{errors.mobile?.message}</p>
 
         <select {...register('gender', { required: 'Gender is required' })} defaultValue="" className={errors.gender ? styles.errorField : ''}>
@@ -185,8 +197,9 @@ export default function Register() {
             }
           })}
           placeholder="Email"
-          className={errors.email ? styles.errorField : ''}
+          className={existingEmail || errors.email ? styles.errorField : ''}
         />
+        {existingEmail && <p className={styles.warning}>Email already exists</p>}
         <p className={styles.error}>{errors.email?.message}</p>
 
         <input

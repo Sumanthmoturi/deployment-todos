@@ -139,6 +139,11 @@
 
 
 .errorField {
-  border: 1px solid red;
+  border: 2px solid red;
   box-shadow: 0 0 8px red;
+}
+
+.warning {
+  color: red;
+  font-size: 12px;
 }
