@@ -131,3 +131,17 @@
     height: 150px;
   }
 }
+
+.logoutButton {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+.logoutButton:hover {
+  background-color: #ff7875;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
+import { useRouter } from 'next/router';
 
 type Todo = {
   id: number;
@@ -12,7 +13,8 @@ type Todo = {
 export default function Todos() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>(''); 
-
+  const router=useRouter();
+  
   useEffect(() => {
     fetchTodos();
   }, [statusFilter]); 
@@ -20,19 +22,26 @@ export default function Todos() {
   const fetchTodos = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You are not logged in. Redirecting to login page.');
+        router.push('/login');
+        return;
+      }
       const response = await axios.get('/todo', {
         headers: { Authorization: `Bearer ${token}` },
-        params: { status: statusFilter || undefined }, // Filter by status if selected
+        params: { status: statusFilter || undefined }, 
       });
       setTodos(response.data as Todo[]);
     } catch (error) {
       console.error('Failed to fetch todos:', error);
+      alert('Session expired. Please log in again.');
+      router.push('/login');
     }
   };
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
-      const newStatus = todo.status === 'completed' ? 'in progress' : 'completed';
+      const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
       const token = localStorage.getItem('token');
       await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` },
@@ -44,6 +53,12 @@ export default function Todos() {
       console.error('Failed to update todo status:', error);
       alert('Error updating the todo status');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); 
+    alert('You have been logged out.');
+    router.push('/login'); 
   };
 
   return (
@@ -93,6 +108,8 @@ export default function Todos() {
         <p>No todos available.</p> 
       )}
     </div>
+
+    <button className={styles.logoutButton} onClick={handleLogout}>Logout</button>
   </div>
   );
 }
