@@ -65,6 +65,8 @@ export default function Todos() {
     <div className={styles.container}>
       <h2>Todos</h2>
 
+      <button className={styles.logoutButton} onClick={handleLogout}>Logout</button>
+
      
       <select
         className={styles.select}
@@ -108,8 +110,6 @@ export default function Todos() {
         <p>No todos available.</p> 
       )}
     </div>
-
-    <button className={styles.logoutButton} onClick={handleLogout}>Logout</button>
   </div>
   );
 }

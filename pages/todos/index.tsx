@@ -2,6 +2,7 @@ import { GetServerSidePropsContext } from 'next';
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 type Todo = {
   id: number;
@@ -17,7 +18,7 @@ interface TodosPageProps {
 export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
-
+  const router = useRouter();
   useEffect(() => {
     if (statusFilter) fetchFilteredTodos();
   }, [statusFilter]);
@@ -50,9 +51,19 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token'); 
+    alert('You have been logged out.');
+    router.push('/login'); 
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.heading2}>Todos</h2>
+
+      <button onClick={handleLogout} className={styles.logoutButton}>
+        Logout
+      </button>
 
       <select
         className={styles.select}
