@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from '../utils/axios';
 import { useRouter } from 'next/router';
@@ -48,37 +48,44 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingEmail, setExistingEmail] = useState(false);
   const [existingMobile, setExistingMobile] = useState(false);
-
-  const checkIfExists = async (field: 'email' | 'mobile', value: string) => {
-    try {
-      const response = await axios.get(`/check-${field}?${field}=${value}`);
-      if (response.data.exists) {
-        if (field === 'email') {
-          setExistingEmail(true);
-          setError('email', {
-            type: 'manual',
-            message: 'Email already exists',
-          });
-        } else if (field === 'mobile') {
-          setExistingMobile(true);
-          setError('mobile', {
-            type: 'manual',
-            message: 'Mobile number already exists',
-          });
+  const [loading, setLoading]=useState(false);
+  
+  const checkIfExists = useCallback(
+    async (field: 'email' | 'mobile', value: string) => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`/check-${field}?${field}=${value}`);
+        if (response.data.exists) {
+          if (field === 'email') {
+            setExistingEmail(true);
+            setError('email', {
+              type: 'manual',
+              message: 'Email already exists',
+            });
+          } else if (field === 'mobile') {
+            setExistingMobile(true);
+            setError('mobile', {
+              type: 'manual',
+              message: 'Mobile number already exists',
+            });
+          }
+        } else {
+          if (field === 'email') {
+            setExistingEmail(false);
+            clearErrors('email');
+          } else if (field === 'mobile') {
+            setExistingMobile(false);
+            clearErrors('mobile');
+          }
         }
-      } else {
-        if (field === 'email') {
-          setExistingEmail(false);
-          clearErrors('email');
-        } else if (field === 'mobile') {
-          setExistingMobile(false);
-          clearErrors('mobile');
-        }
+      } catch (error) {
+        console.error(`Error checking ${field}:`, error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error(`Error checking ${field}:`, error);
-    }
-  };
+    },
+    [setError, clearErrors]
+  );
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
@@ -235,7 +242,7 @@ export default function Register() {
 />
         <p className={styles.error}>{errors.password?.message}</p>
 
-        <button type="submit" disabled={isSubmitting}>Register</button>
+        <button type="submit" disabled={isSubmitting || loading}>{loading ? 'Checking...' : 'Register'}</button>
       </form>
     </div>
   );
