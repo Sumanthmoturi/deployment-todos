@@ -86,6 +86,14 @@ export default function Register() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
     try {
+
+      await checkIfExists('email', data.email);
+      await checkIfExists('mobile', data.mobile);
+      if (existingEmail || existingMobile) {
+        alert(`Registration failed: ${existingEmail ? 'Email already exists' : 'Mobile number already exists'}`);
+        return; 
+      }
+      
       if ((data.country as any).value === 'Other') {
         data.country = data.otherCountry || '';
       }
@@ -99,15 +107,10 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
-      await checkIfExists('email', data.email);
-      await checkIfExists('mobile', data.mobile);
-    
-      if (Object.keys(errors).length === 0 && !existingEmail && !existingMobile) {
       const response = await axios.post('/auth/register', data);
-      console.log(response)
+      console.log(response);
       alert('Registration successful!');
       router.push('/login');
-      }
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data) {
         const errorResponse = error.response.data.message || error.response.data.error;
@@ -119,6 +122,8 @@ export default function Register() {
       setIsSubmitting(false);
     }
   };
+    
+  
 
   const handleCountryChange = (selectedOption: SingleValue<Option>) => {
     setValue('country', selectedOption?.value || '');
