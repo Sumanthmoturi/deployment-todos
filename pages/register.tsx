@@ -48,11 +48,9 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingEmail, setExistingEmail] = useState(false);
   const [existingMobile, setExistingMobile] = useState(false);
-  const [loading, setLoading]=useState(false);
   
   const checkIfExists = useCallback(
     async (field: 'email' | 'mobile', value: string) => {
-      setLoading(true);
       try {
         const response = await axios.get(`/check-${field}?${field}=${value}`);
         if (response.data.exists) {
@@ -80,9 +78,7 @@ export default function Register() {
         }
       } catch (error) {
         console.error(`Error checking ${field}:`, error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     },
     [setError, clearErrors]
   );
@@ -242,7 +238,7 @@ export default function Register() {
 />
         <p className={styles.error}>{errors.password?.message}</p>
 
-        <button type="submit" disabled={isSubmitting || loading}>{loading ? 'Checking...' : 'Register'}</button>
+        <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Registering...' : 'Register'}</button>
       </form>
     </div>
   );
