@@ -98,6 +98,24 @@
   text-align:left;
 }
 
+.container .error-mobile {
+  color: red;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.container .warning-email {
+  color: #e67e22;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
 
 @media (max-width: 600px) {
   .container {
@@ -174,20 +192,3 @@
   margin-top: 0.5rem;
 }
 
-.submitButton {
-  background-color: #4CAF50; 
-  color: white;              
-  border: none;              
-  padding: 10px 20px;       
-  text-align: center;        
-  text-decoration: none;     
-  display: inline-block;     
-  font-size: 16px;          
-  cursor: pointer;         
-  border-radius: 5px;        
-  transition: background-color 0.3s ease; 
-}
-
-.submitButton:hover {
-  background-color: #45a049; 
-}
