@@ -71,8 +71,8 @@ export default function Todos({ initialTodos }: TodosPageProps) {
         onChange={(e) => setStatusFilter(e.target.value)}
       >
         <option value="">All</option>
-        <option value="in progress">In Progress</option>
-        <option value="completed">Completed</option>
+        <option value="In progress">In Progress</option>
+        <option value="Completed">Completed</option>
       </select>
        
      <div className={styles.todoList}>
@@ -86,7 +86,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
 
               <button onClick={() => toggleTodoStatus(todo)} className={styles.button1}>
-                Mark as {todo.status === 'completed' ? 'In Progress' : 'Completed'}
+                Mark as {todo.status === 'Completed' ? 'In Progress' : 'Completed'}
               </button>
             </li>
           ))}
