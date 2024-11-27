@@ -163,3 +163,9 @@
   outline: none; 
   box-shadow: 0 0 3px #c9302c;
 }
+
+
+.endpara {
+  color: white;
+  font-size: 25px;
+}

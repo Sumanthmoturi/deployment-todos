@@ -23,9 +23,10 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const fetchFilteredTodos = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
+      const params = statusFilter ? { status: statusFilter } : {};
       const response = await axios.get('/todo', {
         headers: { Authorization: `Bearer ${token}` },
-        params: { status: statusFilter },
+        params: params,
       });
       setTodos(response.data);
     } catch (error) {
@@ -34,7 +35,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   }, [statusFilter]);
 
   useEffect(() => {
-    if (statusFilter) fetchFilteredTodos();
+    fetchFilteredTodos();
   }, [statusFilter,fetchFilteredTodos]);
 
   const toggleTodoStatus = async (todo: Todo) => {
@@ -92,7 +93,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
           ))}
         </ul>
       ) : (
-        <p>No todos available.</p>
+        <p className={styles.endpara}>No todos available.</p>
       )}
     </div>
     </div>
