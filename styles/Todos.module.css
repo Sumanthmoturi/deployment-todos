@@ -155,7 +155,7 @@
   cursor: pointer;
   margin-top: 20px;
   font-size: 20px;
-  position: absolute;
+  position: relative;
 }
 .logoutButton:hover {
   background-color: #ff7875;
