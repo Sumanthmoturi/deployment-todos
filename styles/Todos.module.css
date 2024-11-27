@@ -68,7 +68,7 @@
   border: none;
   background-color: rgb(109, 180, 109);
   color: white;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family:sans-serif;
 }
 
 .paragraph {
@@ -155,7 +155,7 @@
   cursor: pointer;
   margin-top: 20px;
   font-size: 20px;
-  position: relative;
+  position: fixed;
 }
 .logoutButton:hover {
   background-color: #ff7875;
