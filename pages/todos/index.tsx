@@ -39,7 +39,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
-      const newStatus = todo.status === 'completed' ? 'in progress' : 'completed';
+      const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
       const token = localStorage.getItem('token');
       await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` },
