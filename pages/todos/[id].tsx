@@ -44,18 +44,20 @@ export default function Todos() {
     try {
       const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
       const token = localStorage.getItem('token');
-      await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
+      const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
      
-      setTodos(todos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t)));
+      setTodos(prevTodos => 
+        prevTodos.map(t => 
+          t.id === todo.id ? { ...t, status: response.data.status } : t
+        )
+      );
     } catch (error) {
       console.error('Failed to update todo status:', error);
       alert('Error updating the todo status');
     }
   };
-
   const handleLogout = () => {
     localStorage.removeItem('token'); 
     alert('You have been logged out.');
