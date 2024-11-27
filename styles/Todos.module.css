@@ -144,19 +144,22 @@
 }
 }
 .logoutButton {
-  background-color: rgb(182, 45, 45);
-  color: white;
-  font-family: sans-serif;
-  top:10px;
-  right:20px;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
-  font-size: 20px;
-  position: relative;
+  position: absolute;
+  top: 20px; 
+  right: 20px;
+  background-color: #d9534f; 
+  color: white; 
+  border: none; 
+  border-radius: 5px; 
+  padding: 10px 20px; 
+  cursor: pointer; 
+  font-size: 16px;
+  font-weight: bold;
 }
 .logoutButton:hover {
-  background-color: #ff7875;
+  background-color: #c9302c;
+}
+.logout-button:focus {
+  outline: none; 
+  box-shadow: 0 0 3px #c9302c;
 }
