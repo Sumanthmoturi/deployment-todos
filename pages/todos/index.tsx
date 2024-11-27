@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next'; 
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 
 type Todo = {
@@ -19,11 +19,8 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const router = useRouter();
-  useEffect(() => {
-    if (statusFilter) fetchFilteredTodos();
-  }, [statusFilter]);
 
-  const fetchFilteredTodos = async () => {
+  const fetchFilteredTodos = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('/todo', {
@@ -34,7 +31,11 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     } catch (error) {
       console.error('Failed to fetch filtered todos:', error);
     }
-  };
+  }, [statusFilter]);
+
+  useEffect(() => {
+    if (statusFilter) fetchFilteredTodos();
+  }, [statusFilter,fetchFilteredTodos]);
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {

@@ -1,8 +1,16 @@
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from '../../utils/axios';  
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';  
+import { useState } from 'react';
 import styles from '../../styles/Form.module.css';
+
+type TodoFormData = {
+  name: string;
+  description: string;
+  time: number;
+  status: string;
+};
 
 const statusOptions = [
   { value: 'In progress', label: 'In Progress' },
@@ -14,36 +22,39 @@ export default function CreateTodo() {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
-  } = useForm();
+  } = useForm<TodoFormData>();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<TodoFormData> = async (data) => {
     const token = localStorage.getItem('token');
-    const status = statusOptions.find(option => option.label === data.status)?.value || '';
-    const payload = { ...data, status };
+    if (!token) {
+      alert('User not authenticated. Please login first.');
+      router.push('/login');
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const response = await axios.post('/todo', payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post('/todo',data, 
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert('Todo created successfully');
       router.push('/todos');
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        if (error.response?.data.message.includes('Name already exists')) {
-          setError("name", {
-            type: "manual",
-            message: "This name already exists. Please choose another one.",
-          });
-        } else {
-          alert(`Error: ${error.response?.data.message}`);
-        }
+        alert(`Error: ${error.response?.data.message || 'Unknown error'}`);
       } else {
         alert('Something went wrong');
       }
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div className={styles.container}>
       <h2>Create Todo</h2>
@@ -59,7 +70,7 @@ export default function CreateTodo() {
           })}
           placeholder="Name"
         />
-        {errors.name && <p className={styles.error}>{String(errors.name.message)}</p>}
+        {errors.name && <p className={styles.error}>{errors.name.message}</p>}
 
         <input
           {...register('description', {
@@ -71,7 +82,7 @@ export default function CreateTodo() {
           })}
           placeholder="Description"
         />
-        {errors.description && <p className={styles.error}>{String(errors.description.message)}</p>}
+        {errors.description && <p className={styles.error}>{errors.description.message}</p>}
 
         <input
           {...register('time', {
@@ -89,24 +100,25 @@ export default function CreateTodo() {
           placeholder="Time in Hours"
           type="number"
         />
-        {errors.time && <p className={styles.error}>{String(errors.time.message)}</p>}
+        {errors.time && <p className={styles.error}>{errors.time.message}</p>}
 
         <select
           {...register('status', {
             required: 'Status is required',
-            validate: (value) => !!statusOptions.find(option => option.label === value) || 'Invalid status',
           })}
         >
-          <option value="" disabled hidden>Select Status</option>
-          {statusOptions.map(option => (
-            <option key={option.value} value={option.label}>
+          <option value="">Select Status</option>
+          {statusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
-        {errors.status && <p className={styles.error}>{String(errors.status.message)}</p>}
+        {errors.status && <p className={styles.error}>{errors.status.message}</p>}
 
-        <button type="submit">Create</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Creating...' : 'Create'}
+        </button>
       </form>
     </div>
   );

@@ -106,41 +106,56 @@
   .button1 {
     font-size: 16px; 
   }
+  .logoutButton {
+    font-size: 18px;
+    top: 10px;
+    right: 10px;
+    padding: 8px 15px; 
+  }
 }
 
 @media (max-width: 600px) {
   .heading2 {
-    font-size: 2.5rem; /* Reduce font size for mobile screens */
+    font-size: 2.5rem; 
   }
   .select {
-    font-size: 16px; /* Reduce font size for select dropdown */
-  }
+    font-size: 16px; 
   .todoItem {
-    width: 100%; /* Full width for todo item on mobile */
-    font-size: 18px; /* Adjust font size for better readability */
+    width: 100%; 
+    font-size: 18px; 
   }
   .button1 {
-    font-size: 14px; /* Adjust button size for small screens */
-    padding: 8px; /* Adjust button padding */
+    font-size: 14px; 
+    padding: 8px; 
   }
   .paragraph {
-    font-size: 25px; /* Adjust paragraph size */
+    font-size: 25px;
   }
   .sticker {
     width: 150px;
     height: 150px;
   }
+  .logoutButton {
+    font-size: 16px;  
+    top: 15px;
+    right: 10px;
+    padding: 8px 12px;
+  }
 }
-
+}
 .logoutButton {
-  background-color: #ff4d4f;
+  background-color: rgb(182, 45, 45);
   color: white;
+  font-family: sans-serif;
+  top:10px;
+  right:20px;
   border: none;
   padding: 10px 20px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 20px;
   border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 20px;
+  position: absolute;
 }
 .logoutButton:hover {
   background-color: #ff7875;

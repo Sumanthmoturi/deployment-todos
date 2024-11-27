@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState , useCallback} from 'react';
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
 import { useRouter } from 'next/router';
@@ -14,12 +14,9 @@ export default function Todos() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>(''); 
   const router=useRouter();
-  
-  useEffect(() => {
-    fetchTodos();
-  }, [statusFilter]); 
 
-  const fetchTodos = async () => {
+
+  const fetchTodos = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -37,7 +34,11 @@ export default function Todos() {
       alert('Session expired. Please log in again.');
       router.push('/login');
     }
-  };
+  }, [statusFilter,router]);
+
+  useEffect(() => {
+    fetchTodos();
+  }, [fetchTodos]); 
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
@@ -85,7 +86,6 @@ export default function Todos() {
               <h3>{todo.name}</h3>
               <p>{todo.description}</p>
 
-              {/* Status Display */}
               <p>
                 Status:{' '}
                 <span

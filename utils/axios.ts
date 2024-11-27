@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://deployment-todo-backend.onrender.com', 
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true, 
   headers: {
     'Content-Type': 'application/json',

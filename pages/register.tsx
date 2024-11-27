@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from '../utils/axios';
 import { useRouter } from 'next/router';
@@ -46,55 +46,14 @@ export default function Register() {
   const [showOtherHobby, setShowOtherHobby] = useState(false);
   const [selectedHobbies, setSelectedHobbies] = useState<MultiValue<Option>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [existingEmail, setExistingEmail] = useState(false);
-  const [existingMobile, setExistingMobile] = useState(false);
   
-  const checkIfExists = useCallback(
-    async (field: 'email' | 'mobile', value: string) => {
-      try {
-        const response = await axios.get(`/check-${field}?${field}=${value}`);
-        if (response.data.exists) {
-          if (field === 'email') {
-            setExistingEmail(true);
-            setError('email', {
-              type: 'manual',
-              message: 'Email already exists',
-            });
-          } else if (field === 'mobile') {
-            setExistingMobile(true);
-            setError('mobile', {
-              type: 'manual',
-              message: 'Mobile number already exists',
-            });
-          }
-        } else {
-          if (field === 'email') {
-            setExistingEmail(false);
-            clearErrors('email');
-          } else if (field === 'mobile') {
-            setExistingMobile(false);
-            clearErrors('mobile');
-          }
-        }
-      } catch (error) {
-        console.error(`Error checking ${field}:`, error);
-      } 
-    },
-    [setError, clearErrors]
-  );
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
-    try {
 
-      await checkIfExists('email', data.email);
-      await checkIfExists('mobile', data.mobile);
-      if (existingEmail || existingMobile) {
-        alert(`Registration failed: ${existingEmail ? 'Email already exists' : 'Mobile number already exists'}`);
-        return; 
-      }
-      
-      if ((data.country as any).value === 'Other') {
+    try {
+      if (data.country=== 'Other') {
         data.country = data.otherCountry || '';
       }
 
@@ -108,15 +67,26 @@ export default function Register() {
       }
 
       const response = await axios.post('/auth/register', data);
-      console.log(response);
+      console.log('Registration Response:', response.data);
+
       alert('Registration successful!');
       router.push('/login');
-    } catch (error: unknown) {
-      if (error instanceof AxiosError && error.response?.data) {
-        const errorResponse = error.response.data.message || error.response.data.error;
-        alert(`Registration failed: ${errorResponse}`);
+    } catch (err:unknown) {
+      if (err instanceof AxiosError) {
+        console.error('Registration Error:', err);
+        const errorMessage = err.response?.data?.error || err.response?.data?.message;
+
+        console.log('Error Message:', errorMessage);
+        if (errorMessage.includes('Email already exists')) {
+          setError('email', { message: 'Email already exists' });
+        } else if (errorMessage.includes('Mobile already exists')) {
+          setError('mobile', { message: 'Mobile already exists' });
+        } else {
+          alert('Registration failed. Please try again');
+        }
       } else {
-        alert('An unexpected error occurred.');
+        console.error('Unexpected Error:', err);
+        alert('An unexpected error occurred. Please try again later.');
       }
     } finally {
       setIsSubmitting(false);
@@ -159,12 +129,10 @@ export default function Register() {
             }
           })}
           placeholder="Mobile"
-          className={`${styles.input} ${existingMobile || errors.mobile ? styles.errorField : ''}`}
-          onBlur={(e) => checkIfExists('mobile', e.target.value)}
+          disabled={isSubmitting}
+          className={errors.mobile ? styles.errorField : ''}
         />
-        {existingMobile && <p className={styles.warning}>Mobile number already exists</p>}
-        <p className={styles.error}>{errors.mobile?.message}</p>
-
+        {errors.mobile && <p className={styles.error}>{errors.mobile.message}</p>}
         <select {...register('gender', { required: 'Gender is required' })} defaultValue="" className={errors.gender ? styles.errorField : ''}>
           <option value="" disabled hidden>Select Gender</option>
           <option value="male">Male</option>
@@ -183,6 +151,7 @@ export default function Register() {
           <input
             {...register('otherCountry', { required: 'Enter your country' })}
             placeholder="Enter your country"
+            className={errors.otherCountry ? styles.errorField : ''}
           />
         )}
         <p className={styles.error}>{errors.otherCountry?.message}</p>
@@ -202,6 +171,7 @@ export default function Register() {
           <input
             {...register('otherHobby', { required: 'Enter your hobby' })}
             placeholder="Enter your hobby"
+            className={errors.otherHobby ? styles.errorField : ''}
           />
         )}
         <p className={styles.error}>{errors.otherHobby?.message}</p>
@@ -215,11 +185,10 @@ export default function Register() {
             }
           })}
           placeholder="Email"
-          className={`${styles.input} ${existingEmail || errors.email ? styles.errorField : ''}`}
-          onBlur={(e) => checkIfExists('email', e.target.value)}
+          className={errors.email ? styles.errorField : ''}
+          disabled={isSubmitting}
         />
-        {existingEmail && <p className={styles.warning}>Email already exists</p>}
-        <p className={styles.error}>{errors.email?.message}</p>
+        {errors.email && <p className={styles.error}>{errors.email.message}</p>}
 
         <input
   type="password"
@@ -240,6 +209,7 @@ export default function Register() {
   })}
   placeholder="Password"
   className={errors.password ? styles.errorField : ''}
+  
 />
         <p className={styles.error}>{errors.password?.message}</p>
 
