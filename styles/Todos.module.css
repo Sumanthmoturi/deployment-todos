@@ -148,14 +148,14 @@
   color: white;
   font-family: sans-serif;
   top:10px;
-  left:20px;
+  right:20px;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 20px;
   font-size: 20px;
-  z-index:1000;
+  position: relative;
 }
 .logoutButton:hover {
   background-color: #ff7875;
