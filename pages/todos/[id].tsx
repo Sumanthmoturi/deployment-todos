@@ -26,7 +26,7 @@ export default function Todos() {
       }
       const response = await axios.get('/todo', {
         headers: { Authorization: `Bearer ${token}` },
-        params: { status: statusFilter || undefined }, 
+        params: { status: statusFilter ? capitalize(statusFilter) : undefined },
       });
       setTodos(response.data as Todo[]);
     } catch (error) {
@@ -35,6 +35,9 @@ export default function Todos() {
       router.push('/login');
     }
   }, [statusFilter,router]);
+  const capitalize = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
   useEffect(() => {
     fetchTodos();
