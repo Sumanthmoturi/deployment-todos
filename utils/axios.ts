@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://deployment-todo-backend.onrender.com', 
+  baseURL: 'http://13.201.192.253:10000', 
   withCredentials: true, 
   headers: {
     'Content-Type': 'application/json',
