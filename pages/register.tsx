@@ -39,7 +39,13 @@ type FormData = {
 };
 
 export default function Register() {
-  const { register, handleSubmit,clearErrors, formState: { errors }, setValue, setError } = useForm<FormData>();
+  const { register, handleSubmit,clearErrors, formState: { errors }, setValue, setError } = useForm<FormData>({
+    defaultValues: {
+      hobbies:[],
+      otherCountry:'',
+      otherHobby:'',
+    }
+  });
   const router = useRouter();
 
   const [showOtherCountry, setShowOtherCountry] = useState(false);
