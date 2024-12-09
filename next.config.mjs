@@ -1,11 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  server: {
-    host: '0.0.0.0',
-    port: process.env.PORT || 80,
-  },
-
   
   env: {
     NEXT_PUBLIC_API_URL: process.env.NODE_ENV === 'production'
