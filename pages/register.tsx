@@ -72,6 +72,9 @@ export default function Register() {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
 
+      delete data.otherHobby;
+      delete data.otherCountry;
+
       const response = await axios.post('/auth/register', data);
       console.log('Registration Response:', response.data);
 
