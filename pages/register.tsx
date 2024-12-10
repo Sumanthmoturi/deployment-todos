@@ -39,7 +39,7 @@ type FormData = {
 };
 
 export default function Register() {
-  const { register, handleSubmit,clearErrors, formState: { errors }, setValue, setError } = useForm<FormData>({
+  const { register, handleSubmit,formState: { errors }, setValue, setError } = useForm<FormData>({
   });
   const router = useRouter();
 
@@ -54,25 +54,31 @@ export default function Register() {
     setIsSubmitting(true);
 
     try {
-      if (data.country=== 'Other') {
-        data.country = data.otherCountry || '';
+      if (data.country === 'Other' && !data.otherCountry) {
+        setError('otherCountry', { message: 'Please specify your country' });
+        return;
+      }
+      if (selectedHobbies.some((hobby) => hobby.value === 'Other') && !data.otherHobby) {
+        setError('otherHobby', { message: 'Please specify your hobby' });
+        return;
       }
 
+      if (data.country === 'Other') data.country = data.otherCountry || '';
       if (selectedHobbies.some((hobby) => hobby.value === 'Other')) {
         data.hobbies = [
-          ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((h) => h.label),
+          ...selectedHobbies.filter((hobby) => hobby.value !== 'Other').map((hobby) => hobby.label),
           data.otherHobby || '',
         ];
       } else {
         data.hobbies = selectedHobbies.map((hobby) => hobby.label);
       }
-
+      if (!data.otherCountry) delete data.otherCountry;
       if (!data.otherHobby) delete data.otherHobby;
-    if (!data.otherCountry) delete data.otherCountry;
 
       const response = await axios.post('/auth/register', data);
       console.log('Registration Response:', response.data);
 
+    
       alert('Registration successful!');
       router.push('/login');
     } catch (err:unknown) {
