@@ -20,7 +20,9 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
-      const response = await customAxios.post('/auth/login', data);
+      const response = await customAxios.post('/auth/login', data, {
+        withCredentials:true,
+      });
       console.log('Login Response:', response.data);
 
       localStorage.setItem('token', response.data.accessToken);
