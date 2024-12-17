@@ -17,7 +17,7 @@ export default function Todos() {
   const { id } = router.query;
 
   const fetchTodo = useCallback(async () => {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('access_token');
       if (!token) {
         alert('You are not logged in. Redirecting to login page.');
         router.push('/login');
@@ -45,7 +45,7 @@ export default function Todos() {
     try {
       const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
       console.log('Sending status:', newStatus);
-      const token = localStorage.getItem('token'); 
+      const token = localStorage.getItem('access_token'); 
       if (!token) {
       throw new Error('Token is missing');
     }
@@ -66,7 +66,7 @@ export default function Todos() {
   
   
   const handleLogout = () => {
-    localStorage.removeItem('token'); 
+    localStorage.removeItem('access_token'); 
     alert('You have been logged out.');
   };
 
