@@ -68,7 +68,6 @@ export default function Register() {
       }
 
       if (!data.otherHobby) delete data.otherHobby;
-      
       if (!data.otherCountry) delete data.otherCountry;
 
       const response = await axios.post('/auth/register', data);
@@ -82,9 +81,9 @@ export default function Register() {
         const errorMessage = err.response?.data?.error || err.response?.data?.message;
 
         console.log('Error Message:', errorMessage);
-        if (errorMessage.includes('Email already exists')) {
+        if (errorMessage?.includes('Email already exists')) {
           setError('email', { message: 'Email already exists' });
-        } else if (errorMessage.includes('Mobile already exists')) {
+        } else if (errorMessage?.includes('Mobile already exists')) {
           setError('mobile', { message: 'Mobile already exists' });
         } else {
           alert('Registration failed. Please try again');

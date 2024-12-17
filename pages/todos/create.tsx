@@ -5,6 +5,8 @@ import { AxiosError } from 'axios';
 import { useState } from 'react';
 import styles from '../../styles/Form.module.css';
 
+
+
 type TodoFormData = {
   name: string;
   description: string;
@@ -25,35 +27,29 @@ export default function CreateTodo() {
   } = useForm<TodoFormData>();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
+  
   const onSubmit: SubmitHandler<TodoFormData> = async (data) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('User not authenticated. Please login first.');
-      router.push('/login');
-      return;
-    }
-
-    setLoading(true);
 
     try {
-      await axios.post('/todo',data, 
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      alert('Todo created successfully');
-      router.push('/todos');
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        alert(`Error: ${error.response?.data.message || 'Unknown error'}`);
+  
+      const response = await axios.post('/todo', data, {
+        withCredentials:true,
+      });
+
+      if (response.status === 201) {
+        alert('Todo created successfully');
+        router.push('/todos');
       } else {
-        alert('Something went wrong');
+        alert('Failed to create Todo. Please try again.');
       }
-    } finally {
+
+    } catch (error: unknown) {
       setLoading(false);
+      const message = error instanceof AxiosError ? error.response?.data?.message || 'An unknown error occurred' : 'An unexpected error occurred';
+      alert(`Error: ${message}`);
     }
   };
+
 
   return (
     <div className={styles.container}>

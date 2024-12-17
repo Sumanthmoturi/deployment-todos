@@ -19,44 +19,61 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchFilteredTodos = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      const token = localStorage.getItem('token');
-      const params = statusFilter ? { status: statusFilter } : {};
       const response = await axios.get('/todo', {
-        headers: { Authorization: `Bearer ${token}` },
-        params: params,
+        params: { status: statusFilter || undefined },
+        withCredentials:true,
       });
       setTodos(response.data);
     } catch (error) {
-      console.error('Failed to fetch filtered todos:', error);
+      console.error('Failed to fetch todos:', error);
+    } finally {
+      setLoading(false);
     }
   }, [statusFilter]);
 
   useEffect(() => {
     fetchFilteredTodos();
-  }, [statusFilter,fetchFilteredTodos]);
+  }, [statusFilter, fetchFilteredTodos]);
 
   const toggleTodoStatus = async (todo: Todo) => {
-    try {
-      const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
-      const token = localStorage.getItem('token');
-      await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
+    setLoading(true);
 
-      setTodos(todos.map(t => (t.id === todo.id ? { ...t, status: newStatus } : t)));
+    try {
+      const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
+        withCredentials: true,
+      });
+      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.status } : t)));
     } catch (error) {
-      console.error('Failed to update todo status:', error);
-      alert('Error updating the todo status');
+      console.error('Error updating status:', error);
+      setError('Error updating todo status');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token'); 
-    alert('You have been logged out.');
-    router.push('/login'); 
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/auth/logout', {}, { withCredentials: true });
+      alert('You have been logged out.');
+      router.push('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      setError('Error logging out');
+    }
+  };
+
+  const handleCreateTodo = () => {
+    router.push('/todos/create'); 
   };
 
   return (
@@ -65,6 +82,9 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
       <button onClick={handleLogout} className={styles.logoutButton}>
         Logout
+      </button>
+      <button onClick={handleCreateTodo} className={styles.createButton}>
+        Create Todo
       </button>
 
       <select
@@ -102,13 +122,20 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const token = context.req.cookies.token;
+  const token = context.req.cookies?.access_token;
 
-  try {
-    const response = await axios.get('/todo', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
+    try {
+      if (!token) {
+        return {
+          props: {
+            initialTodos: [],
+          },
+        };
+      }
+      const response = await axios.get('/todo', {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
     return {
       props: {
         initialTodos: response.data,
@@ -122,5 +149,5 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     };
   }
+  
 }
-

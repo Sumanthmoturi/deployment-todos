@@ -4,6 +4,7 @@ import customAxios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
 import { useState } from 'react';
+import Cookies from 'js-cookie';
 
 type LoginFormData = {
   mobile: string;
@@ -24,15 +25,17 @@ export default function Login() {
         withCredentials:true,
       });
       console.log('Login Response:', response.data);
+      const token = response.data.token;
+      if (token) {
+        Cookies.set('access_token', token, { expires: 1 }); 
+      }
 
-      localStorage.setItem('token', response.data.accessToken);
       alert('Login successful');
-      router.push('/todos/create');
+      router.push('/todos');
     } catch (err) {
       if (axios.isAxiosError(err)) {
         console.error('Login Error:', err);
-
-      const errorMessage = err.response?.data?.message;
+        const errorMessage = err.response?.data?.message;
 
         if (errorMessage === 'Incorrect mobile number') {
           setError('mobile', { message: 'Incorrect mobile number' });
@@ -42,7 +45,7 @@ export default function Login() {
           setError('mobile', { message: 'Incorrect mobile number' });
           setError('password', { message: 'Incorrect password' });
         } else {
-          alert('Login failed.Please try again');
+          alert('Login failed. Please try again');
         }
       } else {
         console.error('Unexpected Error:', err);
@@ -52,6 +55,7 @@ export default function Login() {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className={styles.container}>
@@ -90,6 +94,9 @@ export default function Login() {
 
         <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Logging in...' : 'Login'}</button>
       </form>
+      <div className={styles.redirectButton}>
+        <button onClick={() => router.push('/register')}>Go to Register</button>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import axios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
+import { useEffect, useState } from 'react';
 
 
 interface TodoFormData {
@@ -14,27 +15,30 @@ interface TodoFormData {
 export default function TodoForm() {
   const { register, handleSubmit, formState: { errors }, setError } = useForm<TodoFormData>(); 
   const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    setToken(storedToken);
+  }, []);
 
   const onSubmit = async (data: TodoFormData) => { 
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login first');
+        router.push('/login');
+        return;
+      }
       await axios.post('/todo', data, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Todo created Successfully');
       router.push('/todos');
-    } catch (error:any) {
-      if (error.response?.data.message.includes('Name already exists')) {
-        setError('name', {
-          type: 'manual',
-          message: 'Name already exists. Please choose another one.',
-        });
-      } else {
-        alert('An error occurred. Please try again.');
-      }
+    } catch (error) {
+      alert('Error creating todo');
     }
   };
-
+  
   return (
     <div className={styles.container}>
       <h2>Create Todo</h2>

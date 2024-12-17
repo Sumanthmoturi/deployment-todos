@@ -14,39 +14,41 @@ export default function Todos() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>(''); 
   const router=useRouter();
+  const { id } = router.query;
 
-
-  const fetchTodos = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('token');
+  const fetchTodo = useCallback(async () => {
+      const token = localStorage.getItem('accessToken');
       if (!token) {
         alert('You are not logged in. Redirecting to login page.');
         router.push('/login');
         return;
       }
-      const response = await axios.get('/todo', {
+    try {
+      const response = await axios.get(`/todo/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { status: statusFilter ? capitalize(statusFilter) : undefined },
       });
-      setTodos(response.data as Todo[]);
+      setTodos(response.data);
     } catch (error) {
-      console.error('Failed to fetch todos:', error);
+      console.error('Failed to fetch todo:', error);
       alert('Session expired. Please log in again.');
       router.push('/login');
     }
-  }, [statusFilter,router]);
-  const capitalize = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
+  }, [id, router]);
 
   useEffect(() => {
-    fetchTodos();
-  }, [fetchTodos]); 
+    if (id) {
+      fetchTodo();
+    }
+  }, [id, fetchTodo]);
 
   const toggleTodoStatus = async (todo: Todo) => {
     try {
       const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
-      const token = localStorage.getItem('token');
+      console.log('Sending status:', newStatus);
+      const token = localStorage.getItem('token'); 
+      if (!token) {
+      throw new Error('Token is missing');
+    }
       const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -61,10 +63,16 @@ export default function Todos() {
       alert('Error updating the todo status');
     }
   };
+  
+  
   const handleLogout = () => {
     localStorage.removeItem('token'); 
     alert('You have been logged out.');
-    router.push('/login'); 
+  };
+
+
+  const handleCreateTodo = () => {
+    router.push('/todos/create');
   };
 
   return (
@@ -72,6 +80,7 @@ export default function Todos() {
       <h2>Todos</h2>
 
       <button className={styles.logoutButton} onClick={handleLogout}>Logout</button>
+      <button className={styles.createButton} onClick={handleCreateTodo}>Create Todo</button>
 
      
       <select

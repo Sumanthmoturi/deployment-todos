@@ -1,12 +1,18 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
 
 const instance = axios.create({
-  baseURL: 'http://ec2-15-207-221-132.ap-south-1.compute.amazonaws.com', 
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001',
   withCredentials: true, 
   headers: {
-    'Content-Type': 'application/json',
+    Authorization: `Bearer ${Cookies.get('access_token')}` 
   },
 });
+
+
+
 
 export default instance;
 
