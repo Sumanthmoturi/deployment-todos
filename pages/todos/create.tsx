@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';  
 import { useState } from 'react';
 import styles from '../../styles/Form.module.css';
-
+import Cookies from 'js-cookie';
 
 
 type TodoFormData = {
@@ -31,9 +31,15 @@ export default function CreateTodo() {
   const onSubmit: SubmitHandler<TodoFormData> = async (data) => {
 
     try {
+      const token = Cookies.get('access_token');
+      if (!token) {
+        alert('Please log in first');
+        router.push('/login');
+        return;
+      }
   
       const response = await axios.post('/todo', data, {
-        withCredentials:true,
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 201) {

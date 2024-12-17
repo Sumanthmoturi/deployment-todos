@@ -2,6 +2,7 @@ import { useEffect, useState , useCallback} from 'react';
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 type Todo = {
   id: number;
@@ -17,7 +18,7 @@ export default function Todos() {
   const { id } = router.query;
 
   const fetchTodo = useCallback(async () => {
-      const token = localStorage.getItem('access_token');
+      const token = Cookies.get('access_token');
       if (!token) {
         alert('You are not logged in. Redirecting to login page.');
         router.push('/login');
@@ -45,7 +46,7 @@ export default function Todos() {
     try {
       const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
       console.log('Sending status:', newStatus);
-      const token = localStorage.getItem('access_token'); 
+      const token = Cookies.get('access_token'); 
       if (!token) {
       throw new Error('Token is missing');
     }
@@ -66,7 +67,7 @@ export default function Todos() {
   
   
   const handleLogout = () => {
-    localStorage.removeItem('access_token'); 
+    Cookies.remove('access_token'); 
     alert('You have been logged out.');
   };
 

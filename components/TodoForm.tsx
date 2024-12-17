@@ -3,7 +3,7 @@ import axios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
 import { useEffect, useState } from 'react';
-
+import Cookies from 'js-cookie';
 
 interface TodoFormData {
   name: string;
@@ -18,8 +18,8 @@ export default function TodoForm() {
   const [token, setToken] = useState<string | null>(null);
   
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
+    const storedToken = Cookies.get('access_token');
+    setToken(storedToken || null);
   }, []);
 
   const onSubmit = async (data: TodoFormData) => { 
