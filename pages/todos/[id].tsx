@@ -12,27 +12,19 @@ type Todo = {
 };
 
 export default function Todos() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todo, setTodo] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>(''); 
   const router=useRouter();
   const { id } = router.query;
 
   const fetchTodo = useCallback(async () => {
-      const token = Cookies.get('access_token');
-      if (!token) {
-        alert('You are not logged in. Redirecting to login page.');
-        router.push('/login');
-        return;
-      }
     try {
-      const response = await axios.get(`/todo/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTodos(response.data);
+      const response = await axios.get(`/todo/${id}`);
+      setTodo(response.data);
     } catch (error) {
       console.error('Failed to fetch todo:', error);
-      alert('Session expired. Please log in again.');
-      router.push('/login');
+      alert('Error fetchiing the todo details');
+      router.push('/todos');
     }
   }, [id, router]);
 
@@ -43,18 +35,12 @@ export default function Todos() {
   }, [id, fetchTodo]);
 
   const toggleTodoStatus = async (todo: Todo) => {
+    const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
     try {
-      const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
-      console.log('Sending status:', newStatus);
-      const token = Cookies.get('access_token'); 
-      if (!token) {
-      throw new Error('Token is missing');
-    }
-      const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
      
-      setTodos(prevTodos => 
+      const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus });
+     
+      setTodo(prevTodos => 
         prevTodos.map(t => 
           t.id === todo.id ? { ...t, status: response.data.status } : t
         )
@@ -94,9 +80,9 @@ export default function Todos() {
       </select>
 
       <div className={styles.todoList}>
-      {todos.length > 0 ? (
+      {todo.length > 0 ? (
         <ul>
-          {todos.map((todo) => (
+          {todo.map((todo) => (
             <li key={todo.id} className={styles.todoItem}>
               <h3>{todo.name}</h3>
               <p>{todo.description}</p>

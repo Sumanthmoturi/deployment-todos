@@ -28,11 +28,11 @@ export default function CreateTodo() {
   const [loading, setLoading] = useState(false);
   
   const onSubmit: SubmitHandler<TodoFormData> = async (data) => {
+    setLoading(true);
 
     try {
       const response = await customAxios.post('/todo', data);
-      console.log('Login Response:', response.data);
-      
+
       if (response.status === 201) {
         alert('Todo created successfully');
         router.push('/todos');

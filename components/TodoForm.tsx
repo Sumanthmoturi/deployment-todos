@@ -2,8 +2,7 @@ import { useForm } from 'react-hook-form';
 import axios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
-import { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
+
 
 interface TodoFormData {
   name: string;
@@ -15,20 +14,9 @@ interface TodoFormData {
 export default function TodoForm() {
   const { register, handleSubmit, formState: { errors }, setError } = useForm<TodoFormData>(); 
   const router = useRouter();
-  const [token, setToken] = useState<string | null>(null);
   
-  useEffect(() => {
-    const storedToken = Cookies.get('access_token');
-    setToken(storedToken || null);
-  }, []);
-
   const onSubmit = async (data: TodoFormData) => { 
     try {
-      if (!token) {
-        alert('Please login first');
-        router.push('/login');
-        return;
-      }
       await axios.post('/todo', data);
       alert('Todo created Successfully');
       router.push('/todos');

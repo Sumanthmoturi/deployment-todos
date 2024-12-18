@@ -27,7 +27,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     setError(null);
 
     try {
-      const response = await axios.get('/todos', {
+      const response = await axios.get('/todo', {
         params: { status: statusFilter || undefined },
       });
       setTodos(response.data.todos);
@@ -47,7 +47,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     setLoading(true);
 
     try {
-      const response = await axios.patch(`/todos/${todo.id}/update-status`, { 
+      const response = await axios.patch(`/todo/${todo.id}/update-status`, { 
         status: newStatus 
       });
       setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.updatedStatus } : t)));
@@ -121,19 +121,10 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const token = context.req.cookies?.access_token;
 
     try {
-      if (!token) {
-        return {
-          props: {
-            initialTodos: [],
-          },
-        };
-      }
-      const response = await axios.get('/todos', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      
+      const response = await axios.get('/todos');
     return {
       props: {
         initialTodos: response.data,
