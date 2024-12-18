@@ -1,10 +1,9 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
-import axios from '../../utils/axios';  
-import { useRouter } from 'next/router';
-import { AxiosError } from 'axios';  
+import customAxios from '../../utils/axios';  
+import { useRouter } from 'next/router';  
 import { useState } from 'react';
 import styles from '../../styles/Form.module.css';
-import Cookies from 'js-cookie';
+
 
 
 type TodoFormData = {
@@ -31,16 +30,7 @@ export default function CreateTodo() {
   const onSubmit: SubmitHandler<TodoFormData> = async (data) => {
 
     try {
-      const token = Cookies.get('access_token');
-      if (!token) {
-        alert('Please log in first');
-        router.push('/login');
-        return;
-      }
-  
-      const response = await axios.post('/todo', data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await customAxios.post('/todo', data);
 
       if (response.status === 201) {
         alert('Todo created successfully');
@@ -48,14 +38,13 @@ export default function CreateTodo() {
       } else {
         alert('Failed to create Todo. Please try again.');
       }
-
-    } catch (error: unknown) {
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to create Todo. Please try again.');
+    } finally {
       setLoading(false);
-      const message = error instanceof AxiosError ? error.response?.data?.message || 'An unknown error occurred' : 'An unexpected error occurred';
-      alert(`Error: ${message}`);
     }
   };
-
 
   return (
     <div className={styles.container}>

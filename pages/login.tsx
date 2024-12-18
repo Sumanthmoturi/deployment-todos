@@ -21,14 +21,11 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
-      const response = await customAxios.post('/auth/login', data, {
-        withCredentials:true,
-      });
+      const response = await customAxios.post('/auth/login', data);
       console.log('Login Response:', response.data);
-      const token = response.data.token;
-      if (token) {
-        Cookies.set('access_token', token, { expires: 1 }); 
-      }
+
+      alert('Login successful');
+      router.push('/todos');
 
       alert('Login successful');
       router.push('/todos');
