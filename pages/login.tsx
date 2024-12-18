@@ -29,7 +29,6 @@ export default function Login() {
       router.push('/todos');
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.error('Login Error:', err);
         const errorMessage = err.response?.data?.message;
 
         if (errorMessage === 'Incorrect mobile number') {

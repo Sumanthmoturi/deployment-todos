@@ -27,11 +27,10 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     setError(null);
 
     try {
-      const response = await axios.get('/todo', {
+      const response = await axios.get('/todos', {
         params: { status: statusFilter || undefined },
-        withCredentials:true,
       });
-      setTodos(response.data);
+      setTodos(response.data.todos);
     } catch (error) {
       console.error('Failed to fetch todos:', error);
     } finally {
@@ -48,10 +47,10 @@ export default function Todos({ initialTodos }: TodosPageProps) {
     setLoading(true);
 
     try {
-      const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
-        withCredentials: true,
+      const response = await axios.patch(`/todos/${todo.id}/update-status`, { 
+        status: newStatus 
       });
-      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.status } : t)));
+      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.updatedStatus } : t)));
     } catch (error) {
       console.error('Error updating status:', error);
       setError('Error updating todo status');
@@ -132,9 +131,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           },
         };
       }
-      const response = await axios.get('/todo', {
+      const response = await axios.get('/todos', {
         headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
       });
     return {
       props: {
