@@ -29,9 +29,7 @@ export default function TodoForm() {
         router.push('/login');
         return;
       }
-      await axios.post('/todo', data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post('/todo', data);
       alert('Todo created Successfully');
       router.push('/todos');
     } catch (error) {
