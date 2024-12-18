@@ -22,11 +22,9 @@ export default function Login() {
 
     try {
       const response = await customAxios.post('/auth/login', data);
-      console.log('Login Response:', response.data);
+      const { accessToken } = response.data;
 
-      alert('Login successful');
-      router.push('/todos');
-
+      Cookies.set('access_token', accessToken, { expires: 7 });
       alert('Login successful');
       router.push('/todos');
     } catch (err) {
