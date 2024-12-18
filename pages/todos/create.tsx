@@ -31,7 +31,8 @@ export default function CreateTodo() {
 
     try {
       const response = await customAxios.post('/todo', data);
-
+      console.log('Login Response:', response.data);
+      
       if (response.status === 201) {
         alert('Todo created successfully');
         router.push('/todos');
