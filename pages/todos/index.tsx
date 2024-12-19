@@ -19,22 +19,16 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
   const fetchFilteredTodos = useCallback(async () => {
-    setLoading(true);
-    setError(null);
 
     try {
       const response = await axios.get('/todo', {
         params: { status: statusFilter || undefined },
       });
-      setTodos(response.data.todos);
+      setTodos(response.data.todos || []);
     } catch (error) {
       console.error('Failed to fetch todos:', error);
-    } finally {
-      setLoading(false);
+      alert("Error fetching Todos")
     }
   }, [statusFilter]);
 
@@ -44,18 +38,12 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
   const toggleTodoStatus = async (todo: Todo) => {
     const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
-    setLoading(true);
-
     try {
-      const response = await axios.patch(`/todo/${todo.id}/update-status`, { 
-        status: newStatus 
-      });
-      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.updatedStatus } : t)));
+      const response = await axios.patch(`/todo/${todo.id}`, { status: newStatus });
+      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.status } : t)));
     } catch (error) {
       console.error('Error updating status:', error);
-      setError('Error updating todo status');
-    } finally {
-      setLoading(false);
+      alert('Error updating Todo Status');
     }
   };
 
@@ -67,7 +55,6 @@ export default function Todos({ initialTodos }: TodosPageProps) {
       router.push('/login');
     } catch (error) {
       console.error('Error logging out:', error);
-      setError('Error logging out');
     }
   };
 
@@ -121,22 +108,22 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-
-    try {
-      
-      const response = await axios.get('/todos');
+  const cookie = context.req.cookies['access_token'];
+  if (!cookie) {
     return {
-      props: {
-        initialTodos: response.data,
-      },
-    };
-  } catch (error) {
-    console.error('Failed to fetch todos:', error);
-    return {
-      props: {
-        initialTodos: [],
+      redirect: {
+        destination: '/login',
+        permanent: false,
       },
     };
   }
-  
+
+  const res = await axios.get('/todo', { headers: { Authorization: `Bearer ${cookie}` } });
+  const todos = res.data.todos;
+
+  return {
+    props: {
+      initialTodos: todos || [],
+    },
+  };
 }

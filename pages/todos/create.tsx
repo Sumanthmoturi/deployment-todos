@@ -1,5 +1,5 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
-import customAxios from '../../utils/axios';  
+import axios from '../../utils/axios';  
 import { useRouter } from 'next/router';  
 import { useState } from 'react';
 import styles from '../../styles/Form.module.css';
@@ -29,19 +29,13 @@ export default function CreateTodo() {
   
   const onSubmit: SubmitHandler<TodoFormData> = async (data) => {
     setLoading(true);
-
     try {
-      const response = await customAxios.post('/todo', data);
-
-      if (response.status === 201) {
-        alert('Todo created successfully');
-        router.push('/todos');
-      } else {
-        alert('Failed to create Todo. Please try again.');
-      }
+      const response = await axios.post('/todo', data);
+      alert('Todo created successfully');
+      router.push('/todos');
     } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to create Todo. Please try again.');
+      console.error('Error creating todo:', error);
+      alert('Error creating Todo');
     } finally {
       setLoading(false);
     }

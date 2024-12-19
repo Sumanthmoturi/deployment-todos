@@ -19,6 +19,9 @@ export default function Todos() {
 
   const fetchTodo = useCallback(async () => {
     try {
+      if (!id || isNaN(Number(id))) {
+        throw new Error('Invalid ID');
+      }
       const response = await axios.get(`/todo/${id}`);
       setTodo(response.data);
     } catch (error) {
