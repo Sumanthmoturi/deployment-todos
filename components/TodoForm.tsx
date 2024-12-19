@@ -17,7 +17,7 @@ export default function TodoForm() {
   
   const onSubmit = async (data: TodoFormData) => { 
     try {
-      await axios.post('/todo', data);
+      await axios.post('/todos', data);
       alert('Todo created Successfully');
       router.push('/todos');
     } catch (error) {

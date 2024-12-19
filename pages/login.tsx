@@ -22,8 +22,11 @@ export default function Login() {
 
     try {
       const response = await customAxios.post('/auth/login', data);
-      alert('Login successful');
-      router.push('/todos');
+      const token = response.data.token;
+    Cookies.set('access_token', token,{expires:1});
+    alert('Login successful');
+    router.push('/todos')
+
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const errorMessage = err.response?.data?.message;

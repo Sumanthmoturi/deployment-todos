@@ -30,7 +30,7 @@ export default function CreateTodo() {
   const onSubmit: SubmitHandler<TodoFormData> = async (data) => {
     setLoading(true);
     try {
-      const response = await axios.post('/todo', data);
+      const response = await axios.post('/todos', data);
       alert('Todo created successfully');
       router.push('/todos');
     } catch (error) {

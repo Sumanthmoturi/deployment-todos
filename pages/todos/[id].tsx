@@ -22,7 +22,7 @@ export default function Todos() {
       if (!id || isNaN(Number(id))) {
         throw new Error('Invalid ID');
       }
-      const response = await axios.get(`/todo/${id}`);
+      const response = await axios.get(`/todos/${id}`);
       setTodo(response.data);
     } catch (error) {
       console.error('Failed to fetch todo:', error);
@@ -55,9 +55,15 @@ export default function Todos() {
   };
   
   
-  const handleLogout = () => {
-    Cookies.remove('access_token'); 
-    alert('You have been logged out.');
+  const handleLogout = async () => {
+    try {
+      await axios.post('/auth/logout', {}, { withCredentials: true });
+      Cookies.remove('access_token');  // Remove the token from cookies on logout
+      alert('You have been logged out.');
+      router.push('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
 

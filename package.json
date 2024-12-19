@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^10.4.8",
+    "@types/cookie": "^0.6.0",
     "@types/jest": "^29.5.14",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",

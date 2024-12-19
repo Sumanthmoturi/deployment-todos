@@ -3,7 +3,7 @@ import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
-
+import Cookies from 'js-cookie';
 type Todo = {
   id: number;
   name: string;
@@ -19,16 +19,20 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const router = useRouter();
+  
   const fetchFilteredTodos = useCallback(async () => {
-
     try {
-      const response = await axios.get('/todo', {
-        params: { status: statusFilter || undefined },
+      const params: any = {};
+      if (statusFilter) {
+        params.status = statusFilter;
+      }
+      const response = await axios.get('/todos', {
+        params,
       });
       setTodos(response.data.todos || []);
     } catch (error) {
       console.error('Failed to fetch todos:', error);
-      alert("Error fetching Todos")
+      alert("Error fetching Todos");
     }
   }, [statusFilter]);
 
@@ -39,7 +43,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const toggleTodoStatus = async (todo: Todo) => {
     const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
     try {
-      const response = await axios.patch(`/todo/${todo.id}`, { status: newStatus });
+      const response = await axios.patch(`/todos/${todo.id}`, { status: newStatus });
       setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.status } : t)));
     } catch (error) {
       console.error('Error updating status:', error);
@@ -51,6 +55,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
   const handleLogout = async () => {
     try {
       await axios.post('/auth/logout', {}, { withCredentials: true });
+      Cookies.remove('access_token');  
       alert('You have been logged out.');
       router.push('/login');
     } catch (error) {
@@ -108,6 +113,7 @@ export default function Todos({ initialTodos }: TodosPageProps) {
 
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  
   const cookie = context.req.cookies['access_token'];
   if (!cookie) {
     return {
@@ -117,13 +123,24 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     };
   }
+  try {
+    const res = await axios.get('/todos', {
+      headers: { Authorization: `Bearer ${cookie}` },
+    });
+    const todos = res.data.todos;
 
-  const res = await axios.get('/todo', { headers: { Authorization: `Bearer ${cookie}` } });
-  const todos = res.data.todos;
-
-  return {
-    props: {
-      initialTodos: todos || [],
-    },
-  };
+    return {
+      props: {
+        initialTodos: todos || [],
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching todos:', error);
+    return {
+      props: {
+        initialTodos: [],
+      },
+    };
+  }
 }
+
