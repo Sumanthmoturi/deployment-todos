@@ -15,36 +15,38 @@ export default function Todos() {
   const [todo, setTodo] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>(''); 
   const router=useRouter();
-  const { id } = router.query;
 
   const fetchTodo = useCallback(async () => {
     try {
-      if (!id || isNaN(Number(id))) {
-        throw new Error('Invalid ID');
-      }
-      const response = await axios.get(`/todos/${id}`);
-      setTodo(response.data);
+      const token = Cookies.get('access_token');
+      const params = statusFilter ? { status: statusFilter } : {};
+      const response = await axios.get('/todo', {
+        headers: { Authorization: `Bearer ${token}` },
+        params,
+      });
+      console.log(response.data);
+    setTodo(response.data);
     } catch (error) {
       console.error('Failed to fetch todo:', error);
       alert('Error fetchiing the todo details');
       router.push('/todos');
     }
-  }, [id, router]);
+  }, [statusFilter]);
 
   useEffect(() => {
-    if (id) {
-      fetchTodo();
-    }
-  }, [id, fetchTodo]);
+    fetchTodo();
+  }, [fetchTodo]);
 
   const toggleTodoStatus = async (todo: Todo) => {
     const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
     try {
-     
-      const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus });
-     
-      setTodo(prevTodos => 
-        prevTodos.map(t => 
+      const token = Cookies.get('access_token');
+      const response = await axios.patch(`/todo/${todo.id}/status`, { status: newStatus }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setTodo(prevTodos =>
+        prevTodos.map(t =>
           t.id === todo.id ? { ...t, status: response.data.status } : t
         )
       );
@@ -55,15 +57,9 @@ export default function Todos() {
   };
   
   
-  const handleLogout = async () => {
-    try {
-      await axios.post('/auth/logout', {}, { withCredentials: true });
-      Cookies.remove('access_token');  // Remove the token from cookies on logout
-      alert('You have been logged out.');
-      router.push('/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+  const handleLogout = () => {
+    Cookies.remove('access_token'); 
+    alert('You have been logged out.');
   };
 
 

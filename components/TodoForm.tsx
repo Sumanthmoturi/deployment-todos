@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import axios from '../utils/axios';
 import { useRouter } from 'next/router';
 import styles from '../styles/Form.module.css';
-
+import { AxiosError } from 'axios';
 
 interface TodoFormData {
   name: string;
@@ -11,17 +11,29 @@ interface TodoFormData {
   status:string;
 }
 
-export default function TodoForm() {
+interface TodoProps {
+  setTodos: React.Dispatch<React.SetStateAction<TodoFormData[]>>;
+}
+
+export default function TodoForm({ setTodos }: TodoProps) {
   const { register, handleSubmit, formState: { errors }, setError } = useForm<TodoFormData>(); 
   const router = useRouter();
   
   const onSubmit = async (data: TodoFormData) => { 
     try {
-      await axios.post('/todos', data);
+      const response = await axios.post('/todo', data);
       alert('Todo created Successfully');
+      setTodos((prevTodos) => [...prevTodos, response.data]); 
       router.push('/todos');
-    } catch (error) {
-      alert('Error creating todo');
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+
+      if (axiosError.response?.status === 401) {
+        alert('Your session has expired. Please log in again.');
+        router.push('/login');
+      } else {
+        alert('Error creating todo');
+      }
     }
   };
   

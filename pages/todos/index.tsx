@@ -1,9 +1,11 @@
-import { GetServerSidePropsContext } from 'next'; 
+import { GetServerSidePropsContext } from 'next';
 import axios from '../../utils/axios';
 import styles from '../../styles/Todos.module.css';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import { AxiosError } from 'axios';
+
 type Todo = {
   id: number;
   name: string;
@@ -13,54 +15,77 @@ type Todo = {
 
 interface TodosPageProps {
   initialTodos: Todo[];
+  statusFilter: string;
 }
 
-export default function Todos({ initialTodos }: TodosPageProps) {
+export default function Todos({ initialTodos, statusFilter }: TodosPageProps) {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [currentStatusFilter, setStatusFilter] = useState<string>(statusFilter);
   const router = useRouter();
-  
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
   const fetchFilteredTodos = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      const params: any = {};
-      if (statusFilter) {
-        params.status = statusFilter;
-      }
-      const response = await axios.get('/todos', {
-        params,
+      const token = Cookies.get('access_token');
+      const response = await axios.get('/todo', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { status: currentStatusFilter || undefined },
       });
-      setTodos(response.data.todos || []);
+      console.log('Todos fetched from server:', response.data.todos);
+      setTodos(response.data);
     } catch (error) {
-      console.error('Failed to fetch todos:', error);
-      alert("Error fetching Todos");
+      const axiosError = error as AxiosError;
+
+      console.error('Failed to fetch todos:', axiosError);
+
+      if (axiosError.response?.status === 401) {
+        alert('You are not authorized. Please login.');
+        router.push('/login');
+      }
+    } finally {
+      setLoading(false);
     }
-  }, [statusFilter]);
+  }, [currentStatusFilter, router]);
 
   useEffect(() => {
     fetchFilteredTodos();
-  }, [statusFilter, fetchFilteredTodos]);
+  }, [currentStatusFilter, fetchFilteredTodos]);
 
   const toggleTodoStatus = async (todo: Todo) => {
-    const newStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
+    const updatedStatus = todo.status === 'Completed' ? 'In progress' : 'Completed';
+    setTodos((prevTodos) =>
+      prevTodos.filter((t) =>
+        t.id === todo.id ? updatedStatus === currentStatusFilter || !currentStatusFilter : true
+      )
+    );
+  
     try {
-      const response = await axios.patch(`/todos/${todo.id}`, { status: newStatus });
-      setTodos(todos.map((t) => (t.id === todo.id ? { ...t, status: response.data.status } : t)));
+      const response = await axios.patch(`/todo/${todo.id}/status`, {
+        status: updatedStatus,
+      });
+      if (response.data.updatedStatus !== updatedStatus) {
+        setTodos((prevTodos) =>
+          prevTodos.map((t) =>
+            t.id === todo.id ? { ...t, status: response.data.updatedStatus } : t
+          )
+        );
+      }
     } catch (error) {
       console.error('Error updating status:', error);
-      alert('Error updating Todo Status');
+      setError('Error updating todo status');
+      setTodos((prevTodos) => [...prevTodos, todo]);
     }
   };
-
+  
 
   const handleLogout = async () => {
-    try {
-      await axios.post('/auth/logout', {}, { withCredentials: true });
-      Cookies.remove('access_token');  
-      alert('You have been logged out.');
-      router.push('/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+    Cookies.remove('access_token');
+    alert('You have been logged out.');
+    router.push('/login');
   };
 
   const handleCreateTodo = () => {
@@ -81,66 +106,72 @@ export default function Todos({ initialTodos }: TodosPageProps) {
       <select
         className={styles.select}
         onChange={(e) => setStatusFilter(e.target.value)}
+        value={currentStatusFilter}
       >
         <option value="">All</option>
         <option value="In progress">In Progress</option>
         <option value="Completed">Completed</option>
       </select>
        
-     <div className={styles.todoList}>
+      <div className={styles.todoGrid}>
       {todos.length > 0 ? (
-        <ul>
-          {todos.map((todo) => (
-            <li key={todo.id} className={styles.todoItem}>
-              <h3 className={styles.heading3}>Name: {todo.name}</h3>
-              <p className={styles.paragraph}>Description: {todo.description}</p>
-              <p className={styles.paragraph}>Status: {todo.status}</p>
-
-
-              <button onClick={() => toggleTodoStatus(todo)} className={styles.button1}>
-                Mark as {todo.status === 'Completed' ? 'In Progress' : 'Completed'}
-              </button>
-            </li>
-          ))}
-        </ul>
+        todos.map((todo) => (
+          <div key={todo.id} className={styles.todoItem}>
+            <h3 className={styles.heading3}>Name: {todo.name}</h3>
+            <p className={styles.paragraph}>Description: {todo.description}</p>
+            <p className={styles.paragraph}>Status: {todo.status}</p>
+            <button onClick={() => toggleTodoStatus(todo)} className={styles.button1}>
+              Mark as {todo.status === 'Completed' ? 'In Progress' : 'Completed'}
+            </button>
+          </div>
+        ))
       ) : (
         <p className={styles.endpara}>No todos available.</p>
       )}
     </div>
-    </div>
-  );
+  </div>
+);
 }
 
-
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  
-  const cookie = context.req.cookies['access_token'];
-  if (!cookie) {
+  const token = context.req.cookies['access_token'];
+  const statusFilter = context.query.status || '';
+
+  if (!token) {
     return {
+      props: {
+        initialTodos: [],
+        statusFilter: statusFilter as string,
+      },
       redirect: {
         destination: '/login',
         permanent: false,
       },
     };
   }
+
   try {
-    const res = await axios.get('/todos', {
-      headers: { Authorization: `Bearer ${cookie}` },
+    const response = await axios.get('/todo', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { status: statusFilter || undefined },
     });
-    const todos = res.data.todos;
+    console.log('Todos fetched from server:', response.data);
 
     return {
       props: {
-        initialTodos: todos || [],
+        initialTodos: response.data.todos|| [],
+        statusFilter: statusFilter as string,
       },
     };
   } catch (error) {
-    console.error('Error fetching todos:', error);
+    console.error('Failed to fetch todos:', error);
     return {
       props: {
         initialTodos: [],
+        statusFilter: statusFilter as string, 
       },
     };
   }
 }
-
